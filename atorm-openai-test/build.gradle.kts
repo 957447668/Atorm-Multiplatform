@@ -31,16 +31,15 @@ kotlin {
     }
 
     sourceSets {
-        commonMain.dependencies {
+        commonTest.dependencies {
             implementation(projects.atormOpenai)
+
             implementation(libs.kotlin.test)
             implementation(libs.kotlinx.coroutines.core)
+            implementation(libs.kotlinx.serialization.json)
 
 //            implementation(libs.ktor.client.cio)
             implementation(libs.ktor.client.okhttp)
-        }
-        commonTest.dependencies {
-            implementation(libs.kotlinx.serialization.json)
         }
     }
 }

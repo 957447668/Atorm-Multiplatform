@@ -6,8 +6,6 @@ plugins {
 }
 
 kotlin {
-    explicitApi()
-
     compilerOptions {
         freeCompilerArgs.set(listOf("-Xcontext-parameters"))
     }
@@ -33,14 +31,19 @@ kotlin {
     }
 
     sourceSets {
-        commonMain.dependencies {
+        commonTest.dependencies {
+            implementation(projects.atormCore)
+            implementation(projects.atormCoreTest)
+            implementation(projects.atormDoubao)
+
+            implementation(libs.kotlin.test)
             implementation(libs.kotlinx.coroutines.core)
             implementation(libs.kotlinx.serialization.json)
-            implementation("org.jetbrains.kotlinx:kotlinx-io-core:0.9.0")
-            implementation(kotlin("reflect"))
+
+            implementation(libs.ktor.client.cio)
         }
-        commonTest.dependencies {
-            implementation(libs.kotlin.test)
+        jvmTest.dependencies {
+            implementation(libs.ktor.client.okhttp)
         }
     }
 }

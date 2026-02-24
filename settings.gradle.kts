@@ -35,5 +35,7 @@ plugins {
 include(":composeApp")
 include(":atorm-core")
 include(":atorm-core-test")
+include(":atorm-doubao")
+include(":atorm-doubao-test")
 include(":atorm-openai")
 include(":atorm-openai-test")
