@@ -1,7 +1,6 @@
 package com.zxhhyj.atorm
 
 import androidx.compose.animation.AnimatedVisibility
-import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
@@ -18,9 +17,6 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
-import atormmultiplatform.composeapp.generated.resources.Res
-import atormmultiplatform.composeapp.generated.resources.compose_multiplatform
-import org.jetbrains.compose.resources.painterResource
 
 @Composable
 @Preview
@@ -43,7 +39,6 @@ fun App() {
                     modifier = Modifier.fillMaxWidth(),
                     horizontalAlignment = Alignment.CenterHorizontally,
                 ) {
-                    Image(painterResource(Res.drawable.compose_multiplatform), null)
                     Text("Compose: $greeting")
                 }
             }
