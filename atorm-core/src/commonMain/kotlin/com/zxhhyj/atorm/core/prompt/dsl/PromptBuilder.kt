@@ -1,6 +1,11 @@
-package com.zxhhyj.atorm
+package com.zxhhyj.atorm.core.prompt.dsl
 
-import com.zxhhyj.atorm.dsl.PromptDSL
+import com.zxhhyj.atorm.core.prompt.Prompt
+import com.zxhhyj.atorm.core.prompt.message.ContentPart
+import com.zxhhyj.atorm.core.prompt.message.Message
+import com.zxhhyj.atorm.core.prompt.message.RequestMetaInfo
+import com.zxhhyj.atorm.core.prompt.message.ResponseMetaInfo
+import com.zxhhyj.atorm.core.prompt.params.LLMParams
 import kotlin.time.Clock
 
 /**
@@ -50,7 +55,7 @@ public class PromptBuilder internal constructor(
      * @param content The content of the system message
      */
     public fun system(content: String) {
-        messages.add(Message.System(content, RequestMetaInfo.create(clock)))
+        messages.add(Message.System(content, RequestMetaInfo.Companion.create(clock)))
     }
 
     /**
@@ -158,7 +163,7 @@ public class PromptBuilder internal constructor(
      * @param content The content of the assistant message
      */
     public fun assistant(content: String) {
-        messages.add(Message.Assistant(content, finishReason = null, metaInfo = ResponseMetaInfo.create(clock)))
+        messages.add(Message.Assistant(content, finishReason = null, metaInfo = ResponseMetaInfo.Companion.create(clock)))
     }
 
     /**
@@ -244,7 +249,7 @@ public class PromptBuilder internal constructor(
          * @param content The content or payload of the tool call.
          */
         public fun call(id: String?, tool: String, content: String) {
-            call(Message.Tool.Call(id, tool, content, ResponseMetaInfo.create(clock)))
+            call(Message.Tool.Call(id, tool, content, ResponseMetaInfo.Companion.create(clock)))
         }
 
         /**
@@ -278,7 +283,7 @@ public class PromptBuilder internal constructor(
                         id = result.id,
                         tool = result.tool,
                         content = "Synthesized call for result",
-                        metaInfo = ResponseMetaInfo.create(clock)
+                        metaInfo = ResponseMetaInfo.Companion.create(clock)
                     )
                     this@PromptBuilder.messages.add(synthesizedCall)
                 }
@@ -298,7 +303,7 @@ public class PromptBuilder internal constructor(
          * @param content The content or payload of the tool result.
          */
         public fun result(id: String?, tool: String, content: String) {
-            result(Message.Tool.Result(id, tool, content, RequestMetaInfo.create(clock)))
+            result(Message.Tool.Result(id, tool, content, RequestMetaInfo.Companion.create(clock)))
         }
     }
 

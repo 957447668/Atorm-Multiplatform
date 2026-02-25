@@ -1,6 +1,7 @@
-package com.zxhhyj.atorm
+package com.zxhhyj.atorm.core.prompt.dsl
 
-import com.zxhhyj.atorm.dsl.PromptDSL
+import com.zxhhyj.atorm.core.prompt.message.AttachmentContent
+import com.zxhhyj.atorm.core.prompt.message.ContentPart
 import kotlinx.io.buffered
 import kotlinx.io.files.Path
 import kotlinx.io.files.SystemFileSystem

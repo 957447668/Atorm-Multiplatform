@@ -1,4 +1,4 @@
-package com.zxhhyj.atorm
+package com.zxhhyj.atorm.core.prompt.message
 
 import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable

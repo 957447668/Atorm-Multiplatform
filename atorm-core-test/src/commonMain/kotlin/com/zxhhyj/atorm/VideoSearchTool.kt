@@ -1,5 +1,9 @@
 package com.zxhhyj.atorm
 
+import com.zxhhyj.atorm.core.tool.ToolDescriptor
+import com.zxhhyj.atorm.core.tool.ToolParameterDescriptor
+import com.zxhhyj.atorm.core.tool.ToolParameterType
+
 object VideoSearchTool : ToolDescriptor(
     name = "VideoSearchTool",
     description = "视频搜索工具",

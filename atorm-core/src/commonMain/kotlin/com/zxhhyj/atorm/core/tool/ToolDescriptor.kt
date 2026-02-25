@@ -1,4 +1,4 @@
-package com.zxhhyj.atorm
+package com.zxhhyj.atorm.core.tool
 
 public open class ToolDescriptor(
     public val name: String,

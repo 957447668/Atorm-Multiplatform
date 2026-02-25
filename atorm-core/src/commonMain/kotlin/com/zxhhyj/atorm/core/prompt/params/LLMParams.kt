@@ -1,4 +1,4 @@
-package com.zxhhyj.atorm
+package com.zxhhyj.atorm.core.prompt.params
 
 import kotlinx.serialization.Serializable
 import kotlinx.serialization.json.JsonElement
@@ -36,33 +36,12 @@ public data class LLMParams(
     }
 
     @Serializable
-    public sealed interface Schema {
-        public val name: String
-
-        @Serializable
-        public sealed interface JSON : Schema {
-
-            public val schema: JsonObject
-
-            @Serializable
-            public data class Basic(
-                override val name: String,
-                override val schema: JsonObject
-            ) : JSON {
-                init {
-                    require(name.isNotBlank()) { "Schema name must not be empty or blank" }
-                }
-            }
-
-            @Serializable
-            public data class Standard(
-                override val name: String,
-                override val schema: JsonObject
-            ) : JSON {
-                init {
-                    require(name.isNotBlank()) { "Schema name must not be empty or blank" }
-                }
-            }
+    public data class Schema(
+        public val name: String,
+        public val schema: JsonObject
+    ) {
+        init {
+            require(name.isNotBlank()) { "Schema name must not be empty or blank" }
         }
     }
 

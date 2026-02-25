@@ -1,4 +1,4 @@
-package com.zxhhyj.atorm
+package com.zxhhyj.atorm.core.prompt.streaming
 
 import kotlinx.serialization.Serializable
 

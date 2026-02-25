@@ -1,10 +1,11 @@
 import com.zxhhyj.atorm.DoubaoLLMClient
-import com.zxhhyj.atorm.LLMParams
-import com.zxhhyj.atorm.LLModel
 import com.zxhhyj.atorm.MusicSearchTool
-import com.zxhhyj.atorm.StreamFrame
 import com.zxhhyj.atorm.VideoSearchTool
-import com.zxhhyj.atorm.dsl.prompt
+import com.zxhhyj.atorm.clients.executeStructured
+import com.zxhhyj.atorm.core.llm.LLModel
+import com.zxhhyj.atorm.core.prompt.dsl.prompt
+import com.zxhhyj.atorm.core.prompt.params.LLMParams
+import com.zxhhyj.atorm.core.prompt.streaming.StreamFrame
 import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.flow.filterIsInstance
 import kotlinx.coroutines.flow.toList
@@ -52,6 +53,21 @@ class DoubaoLLMClientTest {
                 model = model,
                 tools = listOf(MusicSearchTool, VideoSearchTool)
             ).filterIsInstance<StreamFrame.ToolCall>().toList()
+        }
+        println("执行时间: $measureTime")
+    }
+
+    @Test
+    fun structuredTest() = runBlocking {
+        val measureTime = measureTime {
+            val storySchema = llmClient.executeStructured<StorySchema>(
+                prompt = prompt(params = LLMParams(additionalProperties = mapOf("thinking" to buildJsonObject {
+                    put("type", "disabled")
+                }))) {
+                    user("给我讲一个儿童故事")
+                },
+                model = model
+            )
         }
         println("执行时间: $measureTime")
     }

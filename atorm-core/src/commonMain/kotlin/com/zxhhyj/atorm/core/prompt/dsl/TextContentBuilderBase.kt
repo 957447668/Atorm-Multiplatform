@@ -1,6 +1,4 @@
-package com.zxhhyj.atorm
-
-import com.zxhhyj.atorm.dsl.PromptDSL
+package com.zxhhyj.atorm.core.prompt.dsl
 
 @PromptDSL
 public abstract class TextContentBuilderBase<TContent> {

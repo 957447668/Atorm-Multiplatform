@@ -2,8 +2,10 @@ package com.zxhhyj.atorm
 
 import com.aallam.openai.api.chat.ChatCompletionRequest
 import com.aallam.openai.api.chat.ChatMessage
+import com.aallam.openai.api.chat.ChatResponseFormat
 import com.aallam.openai.api.chat.ChatRole
 import com.aallam.openai.api.chat.FunctionTool
+import com.aallam.openai.api.chat.JsonSchema
 import com.aallam.openai.api.chat.Tool
 import com.aallam.openai.api.chat.ToolCall
 import com.aallam.openai.api.chat.ToolType
@@ -13,6 +15,15 @@ import com.aallam.openai.api.model.ModelId
 import com.aallam.openai.client.OpenAI
 import com.aallam.openai.client.OpenAIConfig
 import com.aallam.openai.client.OpenAIHost
+import com.zxhhyj.atorm.clients.LLMClient
+import com.zxhhyj.atorm.core.llm.LLModel
+import com.zxhhyj.atorm.core.prompt.Prompt
+import com.zxhhyj.atorm.core.prompt.message.Message
+import com.zxhhyj.atorm.core.prompt.message.ResponseMetaInfo
+import com.zxhhyj.atorm.core.prompt.streaming.ModerationResult
+import com.zxhhyj.atorm.core.prompt.streaming.StreamFrame
+import com.zxhhyj.atorm.core.tool.ToolDescriptor
+import com.zxhhyj.atorm.core.tool.ToolParameterType
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.flow.onCompletion
@@ -80,6 +91,15 @@ public class DoubaoLLMClient(apiKey: String, clock: Clock = Clock.System) : LLMC
                                 addAll(tool.requiredParameters.map { it.name })
                             }
                         })
+                )
+            },
+            responseFormat = prompt.params.schema?.let {
+                ChatResponseFormat.jsonSchema(
+                    JsonSchema(
+                        name = it.name,
+                        schema = it.schema,
+                        strict = true
+                    )
                 )
             }
         )

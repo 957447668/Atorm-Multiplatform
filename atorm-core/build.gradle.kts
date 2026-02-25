@@ -32,8 +32,10 @@ kotlin {
         commonMain.dependencies {
             implementation(libs.kotlinx.coroutines.core)
             implementation(libs.kotlinx.serialization.json)
-            implementation("org.jetbrains.kotlinx:kotlinx-io-core:0.9.0")
-            implementation(kotlin("reflect"))
+            implementation(libs.kotlinx.io.core)
+        }
+        jvmMain.dependencies {
+            implementation(libs.kotlinx.schema.generator.json)
         }
         commonTest.dependencies {
             implementation(libs.kotlin.test)

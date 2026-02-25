@@ -1,5 +1,6 @@
-package com.zxhhyj.atorm
+package com.zxhhyj.atorm.core.prompt.streaming
 
+import com.zxhhyj.atorm.core.prompt.message.ResponseMetaInfo
 import kotlinx.serialization.Serializable
 import kotlinx.serialization.json.Json
 import kotlinx.serialization.json.JsonObject
