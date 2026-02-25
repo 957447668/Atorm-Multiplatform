@@ -5,6 +5,7 @@ import com.aallam.openai.api.chat.ChatMessage
 import com.aallam.openai.api.chat.ChatRole
 import com.aallam.openai.api.chat.FunctionTool
 import com.aallam.openai.api.chat.Tool
+import com.aallam.openai.api.chat.ToolCall
 import com.aallam.openai.api.chat.ToolType
 import com.aallam.openai.api.core.Parameters
 import com.aallam.openai.api.http.Timeout
@@ -32,16 +33,8 @@ class DoubaoLLMClient(apiKey: String, clock: Clock = Clock.System) : LLMClient {
         )
     )
 
-    override suspend fun execute(
-        prompt: Prompt,
-        model: LLModel,
-        tools: List<ToolDescriptor>
-    ): List<Message.Response> {
-        TODO("Not yet implemented")
-    }
-
-    override fun executeStreaming(prompt: Prompt, model: LLModel, tools: List<ToolDescriptor>): Flow<StreamFrame> {
-        val chatCompletionRequest = ChatCompletionRequest(
+    private fun buildChatCompletionRequest(prompt: Prompt, model: LLModel, tools: List<ToolDescriptor>) =
+        ChatCompletionRequest(
             model = ModelId(model.id),
             messages = prompt.messages.map {
                 val role = when (it.role) {
@@ -90,10 +83,44 @@ class DoubaoLLMClient(apiKey: String, clock: Clock = Clock.System) : LLMClient {
                 )
             }
         )
+
+    override suspend fun execute(
+        prompt: Prompt,
+        model: LLModel,
+        tools: List<ToolDescriptor>
+    ): List<Message.Response> {
+        val chatCompletion = openAI.chatCompletion(buildChatCompletionRequest(prompt, model, tools), buildJsonObject {
+            prompt.params.additionalProperties?.forEach {
+                put(it.key, it.value)
+            }
+        })
+        return buildList {
+            chatCompletion.choices.forEach { choice ->
+                choice.message.reasoningContent?.let {
+                    add(Message.Reasoning(content = it, metaInfo = ResponseMetaInfo.Empty))
+                }
+                choice.message.content?.let {
+                    add(Message.Assistant(content = it, metaInfo = ResponseMetaInfo.Empty))
+                }
+                choice.message.toolCalls?.filterIsInstance<ToolCall.Function>()?.forEach {
+                    add(
+                        Message.Tool.Call(
+                            id = it.id.id,
+                            tool = it.function.name,
+                            content = it.function.arguments,
+                            metaInfo = ResponseMetaInfo.Empty
+                        )
+                    )
+                }
+            }
+        }
+    }
+
+    override fun executeStreaming(prompt: Prompt, model: LLModel, tools: List<ToolDescriptor>): Flow<StreamFrame> {
         return flow {
             var lastFrame: StreamFrame? = null
             var lastTooCallIndex: Int? = null
-            openAI.chatCompletions(chatCompletionRequest, buildJsonObject {
+            openAI.chatCompletions(buildChatCompletionRequest(prompt, model, tools), buildJsonObject {
                 prompt.params.additionalProperties?.forEach {
                     put(it.key, it.value)
                 }
