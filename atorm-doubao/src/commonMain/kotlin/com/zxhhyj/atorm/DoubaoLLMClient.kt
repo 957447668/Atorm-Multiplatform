@@ -104,10 +104,7 @@ class DoubaoLLMClient(apiKey: String, clock: Clock = Clock.System) : LLMClient {
             }.collect {
                 it.choices.forEach { chunk ->
                     when {
-                        chunk.delta?.reasoningContent?.isNotEmpty() == true -> {
-                            emit(StreamFrame.Append(chunk.delta!!.reasoningContent!!))
-                            lastFrame = null
-                        }
+                        chunk.delta?.reasoningContent?.isNotEmpty() == true -> {}
 
                         chunk.delta?.content?.isNotEmpty() == true -> {
                             emit(StreamFrame.Append(chunk.delta!!.content!!))
@@ -118,15 +115,19 @@ class DoubaoLLMClient(apiKey: String, clock: Clock = Clock.System) : LLMClient {
                             val id = StringBuilder()
                             val name = StringBuilder()
                             val content = StringBuilder()
-                            chunk.delta!!.toolCalls!!.forEach {
-                                if (lastTooCallIndex != null && lastTooCallIndex != it.index) {
-                                    emit(StreamFrame.ToolCall(id.toString(), name.toString(), content.toString()))
+                            chunk.delta!!.toolCalls!!.forEach { callChunk ->
+                                if (lastTooCallIndex != null && lastTooCallIndex != callChunk.index) {
+                                    emit(lastFrame!!)
                                     lastFrame = null
-                                    lastTooCallIndex = it.index
+                                    lastTooCallIndex = null
+                                } else {
+                                    lastTooCallIndex = callChunk.index
                                 }
-                                id.append(it.id)
-                                it.function?.nameOrNull?.let { name.append(it) }
-                                it.function?.argumentsOrNull?.let { content.append(it) }
+                                callChunk.id?.let {
+                                    id.append(it.id)
+                                }
+                                callChunk.function?.nameOrNull?.let { name.append(it) }
+                                callChunk.function?.argumentsOrNull?.let { content.append(it) }
                             }
 
                             lastFrame = (lastFrame as StreamFrame.ToolCall?)?.let {

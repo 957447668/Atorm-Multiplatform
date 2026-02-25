@@ -29,11 +29,11 @@ class DoubaoLLMClientTest {
             prompt = prompt(params = LLMParams(additionalProperties = mapOf("thinking" to buildJsonObject {
                 put("type", "disabled")
             }))) {
-                user("我想听泰勒斯威夫特的歌，然后还想听双笙的歌")
+                user("搜索泰勒斯威夫特的歌，搜索三体电视剧")
             },
             model = LLModel("doubao-seed-1-6-flash-250828", 0),
-            tools = listOf(MusicSearchTool)
-        ).toList()
+            tools = listOf(MusicSearchTool, VideoSearchTool)
+        ).filterIsInstance<StreamFrame.ToolCall>().toList()
         toList
     }
 }
