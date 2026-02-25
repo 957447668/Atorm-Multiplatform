@@ -20,11 +20,11 @@ kotlin {
     val isArm64 = System.getProperty("os.arch") == "aarch64"
     val isMingwX64 = hostOs.startsWith("Windows")
     when {
-        hostOs == "Mac OS X" && isArm64 -> macosArm64("native")
-        hostOs == "Mac OS X" && !isArm64 -> macosX64("native")
-        hostOs == "Linux" && isArm64 -> linuxArm64("native")
-        hostOs == "Linux" && !isArm64 -> linuxX64("native")
-        isMingwX64 -> mingwX64("native")
+        hostOs == "Mac OS X" && isArm64 -> macosArm64()
+        hostOs == "Mac OS X" && !isArm64 -> macosX64()
+        hostOs == "Linux" && isArm64 -> linuxArm64()
+        hostOs == "Linux" && !isArm64 -> linuxX64()
+        isMingwX64 -> mingwX64()
         else -> throw GradleException("Host OS is not supported in Kotlin/Native.")
     }
 
@@ -32,6 +32,7 @@ kotlin {
         commonMain.dependencies {
             implementation(projects.atormCore)
             implementation(projects.atormOpenai)
+            implementation(projects.openaiClient)
             implementation(libs.kotlinx.serialization.json)
             implementation(libs.kotlinx.coroutines.core)
         }

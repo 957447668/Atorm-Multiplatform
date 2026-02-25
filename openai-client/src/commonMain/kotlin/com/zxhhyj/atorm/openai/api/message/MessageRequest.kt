@@ -1,0 +1,73 @@
+package com.zxhhyj.atorm.openai.api.message
+
+import com.zxhhyj.atorm.openai.api.core.Role
+import kotlinx.serialization.SerialName
+import kotlinx.serialization.Serializable
+
+/**
+ * Create a message request.
+ */
+@Serializable
+public class MessageRequest(
+    /**
+     * The role of the entity that is creating the message. Currently only [Role.Companion.User] is supported.
+     */
+    @SerialName("role") public val role: Role,
+
+    /**
+     * The content of the message.
+     */
+    @SerialName("content") public val content: String,
+
+    /**
+     * A list of files attached to the message.
+     */
+    @SerialName("attachments") public val attachments: List<Attachment>? = null,
+
+    /**
+     * Set of 16 key-value pairs that can be attached to an object.
+     * This can be useful for storing additional information about the object in a structured format.
+     * Keys can be a maximum of 64 characters long, and values can be a maximum of 512 characters long.
+     */
+    @SerialName("metadata") public val metadata: Map<String, String>? = null,
+)
+
+/**
+ * A message request builder.
+ */
+public fun messageRequest(block: MessageRequestBuilder.() -> Unit): MessageRequest =
+    MessageRequestBuilder().apply(block).build()
+
+/**
+ * A message request builder.
+ */
+public class MessageRequestBuilder {
+    /**
+     * The role of the entity that is creating the message. Currently only [Role.Companion.User] is supported.
+     */
+    public var role: Role? = null
+
+    /**
+     * The content of the message.
+     */
+    public var content: String? = null
+
+    /**
+     * A list of files attached to the message.
+     */
+    public var attachments: List<Attachment>? = null
+
+    /**
+     * Set of 16 key-value pairs that can be attached to an object.
+     * This can be useful for storing additional information about the object in a structured format.
+     * Keys can be a maximum of 64 characters long, and values can be a maximum of 512 characters long.
+     */
+    public var metadata: Map<String, String>? = null
+
+    public fun build(): MessageRequest = MessageRequest(
+        role = requireNotNull(role) { "role is required" },
+        content = requireNotNull(content) { "content is required" },
+        attachments = attachments,
+        metadata = metadata
+    )
+}

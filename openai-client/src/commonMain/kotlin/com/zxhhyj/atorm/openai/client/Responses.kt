@@ -1,0 +1,59 @@
+package com.zxhhyj.atorm.openai.client
+
+import com.zxhhyj.atorm.openai.api.core.PaginatedList
+import com.zxhhyj.atorm.openai.api.core.RequestOptions
+import com.zxhhyj.atorm.openai.api.core.SortOrder
+import com.zxhhyj.atorm.openai.api.response.Response
+import com.zxhhyj.atorm.openai.api.response.ResponseId
+import com.zxhhyj.atorm.openai.api.response.ResponseInputItem
+import com.zxhhyj.atorm.openai.api.response.ResponseRequest
+
+/**
+ * Create and manage model responses.
+ */
+public interface Responses {
+
+    /**
+     * Creates a model response.
+     */
+    public suspend fun response(
+        request: ResponseRequest,
+        requestOptions: RequestOptions? = null
+    ): Response
+
+    /**
+     * Retrieves a response by its identifier.
+     */
+    public suspend fun response(
+        id: ResponseId,
+        requestOptions: RequestOptions? = null
+    ): Response?
+
+    /**
+     * Deletes a stored response.
+     */
+    public suspend fun delete(
+        id: ResponseId,
+        requestOptions: RequestOptions? = null
+    ): Boolean
+
+    /**
+     * Cancels an in-progress response.
+     */
+    public suspend fun cancel(
+        id: ResponseId,
+        requestOptions: RequestOptions? = null
+    ): Response?
+
+    /**
+     * Lists input items for a response.
+     */
+    public suspend fun responseInputItems(
+        id: ResponseId,
+        limit: Int? = null,
+        order: SortOrder? = null,
+        after: String? = null,
+        before: String? = null,
+        requestOptions: RequestOptions? = null
+    ): PaginatedList<ResponseInputItem>
+}

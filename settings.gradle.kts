@@ -33,6 +33,7 @@ plugins {
 }
 
 include(":composeApp")
+include(":openai-client")
 include(":atorm-core")
 include(":atorm-core-test")
 include(":atorm-doubao")
