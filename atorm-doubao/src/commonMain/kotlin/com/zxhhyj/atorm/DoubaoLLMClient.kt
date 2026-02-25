@@ -24,7 +24,7 @@ import kotlinx.serialization.json.putJsonObject
 import kotlin.time.Clock
 import kotlin.time.Duration.Companion.seconds
 
-class DoubaoLLMClient(apiKey: String, clock: Clock = Clock.System) : LLMClient {
+public class DoubaoLLMClient(apiKey: String, clock: Clock = Clock.System) : LLMClient {
     private val openAI = OpenAI(
         OpenAIConfig(
             token = apiKey,

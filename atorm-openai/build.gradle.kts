@@ -9,10 +9,6 @@ plugins {
 kotlin {
     explicitApi()
 
-    compilerOptions {
-        freeCompilerArgs.set(listOf("-Xcontext-parameters"))
-    }
-
     androidTarget {
         compilerOptions {
             jvmTarget.set(JvmTarget.JVM_11)
@@ -35,6 +31,8 @@ kotlin {
 
     sourceSets {
         commonMain.dependencies {
+            implementation(projects.atormCore)
+
             implementation(libs.ktor.client.core)
             implementation(libs.ktor.client.content.negotiation)
             implementation(libs.ktor.client.auth)

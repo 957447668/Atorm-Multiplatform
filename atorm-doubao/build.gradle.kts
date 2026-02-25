@@ -6,9 +6,7 @@ plugins {
 }
 
 kotlin {
-    compilerOptions {
-        freeCompilerArgs.set(listOf("-Xcontext-parameters"))
-    }
+    explicitApi()
 
     androidTarget {
         compilerOptions {
