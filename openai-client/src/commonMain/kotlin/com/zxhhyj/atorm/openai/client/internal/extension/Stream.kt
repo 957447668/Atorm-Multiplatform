@@ -1,9 +1,11 @@
 package com.zxhhyj.atorm.openai.client.internal.extension
 
 import com.zxhhyj.atorm.openai.client.internal.JsonLenient
-import io.ktor.client.call.*
-import io.ktor.client.statement.*
-import io.ktor.utils.io.*
+import io.ktor.client.call.body
+import io.ktor.client.statement.HttpResponse
+import io.ktor.utils.io.ByteReadChannel
+import io.ktor.utils.io.cancel
+import io.ktor.utils.io.readUTF8Line
 import kotlinx.coroutines.InternalCoroutinesApi
 import kotlinx.coroutines.channels.ProducerScope
 import kotlinx.coroutines.currentCoroutineContext

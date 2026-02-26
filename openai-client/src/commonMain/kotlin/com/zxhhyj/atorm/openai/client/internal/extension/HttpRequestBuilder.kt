@@ -1,8 +1,8 @@
 package com.zxhhyj.atorm.openai.client.internal.extension
 
 import com.zxhhyj.atorm.openai.api.core.RequestOptions
-import io.ktor.client.plugins.*
-import io.ktor.client.request.*
+import io.ktor.client.plugins.timeout
+import io.ktor.client.request.HttpRequestBuilder
 
 /**
  * Apply request options to the request builder.

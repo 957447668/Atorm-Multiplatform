@@ -3,17 +3,28 @@ package com.zxhhyj.atorm.openai.client.internal.api
 import com.zxhhyj.atorm.openai.api.assistant.Assistant
 import com.zxhhyj.atorm.openai.api.assistant.AssistantId
 import com.zxhhyj.atorm.openai.api.assistant.AssistantRequest
-import com.zxhhyj.atorm.openai.api.core.*
+import com.zxhhyj.atorm.openai.api.core.DeleteResponse
+import com.zxhhyj.atorm.openai.api.core.ListResponse
+import com.zxhhyj.atorm.openai.api.core.RequestOptions
+import com.zxhhyj.atorm.openai.api.core.SortOrder
 import com.zxhhyj.atorm.openai.api.exception.OpenAIAPIException
 import com.zxhhyj.atorm.openai.client.Assistants
 import com.zxhhyj.atorm.openai.client.internal.extension.beta
 import com.zxhhyj.atorm.openai.client.internal.extension.requestOptions
 import com.zxhhyj.atorm.openai.client.internal.http.HttpRequester
 import com.zxhhyj.atorm.openai.client.internal.http.perform
-import io.ktor.client.call.*
-import io.ktor.client.request.*
-import io.ktor.client.statement.*
-import io.ktor.http.*
+import io.ktor.client.call.body
+import io.ktor.client.request.delete
+import io.ktor.client.request.get
+import io.ktor.client.request.parameter
+import io.ktor.client.request.post
+import io.ktor.client.request.setBody
+import io.ktor.client.request.url
+import io.ktor.client.statement.HttpResponse
+import io.ktor.http.ContentType
+import io.ktor.http.HttpStatusCode
+import io.ktor.http.contentType
+import io.ktor.http.path
 
 internal class AssistantsApi(val requester: HttpRequester) : Assistants {
     override suspend fun assistant(request: AssistantRequest, requestOptions: RequestOptions?): Assistant {

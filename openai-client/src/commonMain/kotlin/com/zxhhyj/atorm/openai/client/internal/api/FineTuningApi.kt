@@ -10,10 +10,16 @@ import com.zxhhyj.atorm.openai.client.FineTuning
 import com.zxhhyj.atorm.openai.client.internal.extension.requestOptions
 import com.zxhhyj.atorm.openai.client.internal.http.HttpRequester
 import com.zxhhyj.atorm.openai.client.internal.http.perform
-import io.ktor.client.call.*
-import io.ktor.client.request.*
-import io.ktor.client.statement.*
-import io.ktor.http.*
+import io.ktor.client.call.body
+import io.ktor.client.request.get
+import io.ktor.client.request.parameter
+import io.ktor.client.request.post
+import io.ktor.client.request.setBody
+import io.ktor.client.request.url
+import io.ktor.client.statement.HttpResponse
+import io.ktor.http.ContentType
+import io.ktor.http.HttpStatusCode
+import io.ktor.http.contentType
 
 internal class FineTuningApi(private val requester: HttpRequester) : FineTuning {
     override suspend fun fineTuningJob(request: FineTuningRequest, requestOptions: RequestOptions?): FineTuningJob {

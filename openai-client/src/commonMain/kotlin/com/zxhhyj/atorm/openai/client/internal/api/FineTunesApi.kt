@@ -12,9 +12,20 @@ import com.zxhhyj.atorm.openai.client.internal.extension.streamEventsFrom
 import com.zxhhyj.atorm.openai.client.internal.http.HttpRequester
 import com.zxhhyj.atorm.openai.client.internal.http.perform
 import io.ktor.client.call.body
-import io.ktor.client.request.*
+import io.ktor.client.request.HttpRequestBuilder
+import io.ktor.client.request.accept
+import io.ktor.client.request.delete
+import io.ktor.client.request.get
+import io.ktor.client.request.headers
+import io.ktor.client.request.post
+import io.ktor.client.request.setBody
+import io.ktor.client.request.url
 import io.ktor.client.statement.HttpResponse
-import io.ktor.http.*
+import io.ktor.http.ContentType
+import io.ktor.http.HttpHeaders
+import io.ktor.http.HttpMethod
+import io.ktor.http.HttpStatusCode
+import io.ktor.http.contentType
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.channelFlow
 

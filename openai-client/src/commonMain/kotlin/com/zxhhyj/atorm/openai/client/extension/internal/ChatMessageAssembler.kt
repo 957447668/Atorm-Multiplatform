@@ -1,7 +1,16 @@
 package com.zxhhyj.atorm.openai.client.extension.internal
 
-import com.zxhhyj.atorm.openai.api.chat.*
-import kotlin.collections.onEach
+import com.zxhhyj.atorm.openai.api.chat.ChatChunk
+import com.zxhhyj.atorm.openai.api.chat.ChatMessage
+import com.zxhhyj.atorm.openai.api.chat.ChatRole
+import com.zxhhyj.atorm.openai.api.chat.ContentFilterOffsets
+import com.zxhhyj.atorm.openai.api.chat.ContentFilterResults
+import com.zxhhyj.atorm.openai.api.chat.FunctionCall
+import com.zxhhyj.atorm.openai.api.chat.ToolCall
+import com.zxhhyj.atorm.openai.api.chat.ToolCallChunk
+import com.zxhhyj.atorm.openai.api.chat.ToolId
+import com.zxhhyj.atorm.openai.api.chat.chatMessage
+import com.zxhhyj.atorm.openai.api.chat.function
 
 /**
  * A class to help assemble chat messages from chat chunks.

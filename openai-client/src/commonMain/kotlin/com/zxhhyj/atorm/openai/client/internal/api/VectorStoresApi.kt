@@ -1,19 +1,37 @@
 package com.zxhhyj.atorm.openai.client.internal.api
 
 import com.zxhhyj.atorm.openai.api.batch.BatchId
-import com.zxhhyj.atorm.openai.api.core.*
+import com.zxhhyj.atorm.openai.api.core.DeleteResponse
+import com.zxhhyj.atorm.openai.api.core.PaginatedList
+import com.zxhhyj.atorm.openai.api.core.RequestOptions
+import com.zxhhyj.atorm.openai.api.core.SortOrder
+import com.zxhhyj.atorm.openai.api.core.Status
 import com.zxhhyj.atorm.openai.api.exception.OpenAIAPIException
 import com.zxhhyj.atorm.openai.api.file.FileId
-import com.zxhhyj.atorm.openai.api.vectorstore.*
+import com.zxhhyj.atorm.openai.api.vectorstore.FileBatchRequest
+import com.zxhhyj.atorm.openai.api.vectorstore.FilesBatch
+import com.zxhhyj.atorm.openai.api.vectorstore.VectorStore
+import com.zxhhyj.atorm.openai.api.vectorstore.VectorStoreFile
+import com.zxhhyj.atorm.openai.api.vectorstore.VectorStoreFileRequest
+import com.zxhhyj.atorm.openai.api.vectorstore.VectorStoreId
+import com.zxhhyj.atorm.openai.api.vectorstore.VectorStoreRequest
 import com.zxhhyj.atorm.openai.client.VectorStores
 import com.zxhhyj.atorm.openai.client.internal.extension.beta
 import com.zxhhyj.atorm.openai.client.internal.extension.requestOptions
 import com.zxhhyj.atorm.openai.client.internal.http.HttpRequester
 import com.zxhhyj.atorm.openai.client.internal.http.perform
-import io.ktor.client.call.*
-import io.ktor.client.request.*
-import io.ktor.client.statement.*
-import io.ktor.http.*
+import io.ktor.client.call.body
+import io.ktor.client.request.delete
+import io.ktor.client.request.get
+import io.ktor.client.request.parameter
+import io.ktor.client.request.post
+import io.ktor.client.request.setBody
+import io.ktor.client.request.url
+import io.ktor.client.statement.HttpResponse
+import io.ktor.http.ContentType
+import io.ktor.http.HttpStatusCode
+import io.ktor.http.contentType
+import io.ktor.http.path
 
 internal class VectorStoresApi(private val requester: HttpRequester) : VectorStores {
 

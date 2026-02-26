@@ -1,7 +1,7 @@
 package com.zxhhyj.atorm.core.prompt.dsl
 
-import com.zxhhyj.atorm.core.prompt.params.LLMParams
 import com.zxhhyj.atorm.core.prompt.Prompt
+import com.zxhhyj.atorm.core.prompt.params.LLMParams
 import kotlin.time.Clock
 
 @PromptDSL

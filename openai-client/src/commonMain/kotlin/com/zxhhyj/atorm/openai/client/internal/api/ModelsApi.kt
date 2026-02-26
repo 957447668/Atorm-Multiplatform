@@ -8,8 +8,10 @@ import com.zxhhyj.atorm.openai.client.Models
 import com.zxhhyj.atorm.openai.client.internal.extension.requestOptions
 import com.zxhhyj.atorm.openai.client.internal.http.HttpRequester
 import com.zxhhyj.atorm.openai.client.internal.http.perform
-import io.ktor.client.request.*
-import io.ktor.http.*
+import io.ktor.client.request.get
+import io.ktor.client.request.url
+import io.ktor.http.ContentType
+import io.ktor.http.contentType
 
 /**
  * Implementation of [Models] API.
