@@ -30,6 +30,7 @@ dependencyResolutionManagement {
 
 include(":composeApp")
 include(":openai-client")
+include(":atorm")
 include(":atorm-core")
 include(":atorm-core-test")
 include(":atorm-agent")
