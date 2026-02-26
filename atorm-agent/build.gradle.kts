@@ -47,7 +47,7 @@ mavenPublishing {
     publishToMavenCentral()
     signAllPublications()
 
-    coordinates(libs.versions.uiToolingPreview.get(), "atorm-agent", version.toString())
+    coordinates(group.toString(), "atorm-agent", version.toString())
 
     pom {
         name = "atorm-agent"
