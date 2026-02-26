@@ -25,7 +25,7 @@ kotlin {
 
     sourceSets {
         commonMain.dependencies {
-            implementation(projects.atormCore)
+            api(projects.atormCore)
             implementation(projects.atormOpenai)
             implementation(projects.openaiClient)
             implementation(libs.kotlinx.serialization.json)
