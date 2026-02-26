@@ -21,93 +21,8 @@ import kotlinx.serialization.json.jsonObject
 private fun SerialDescriptor.description(): String =
     annotations.filterIsInstance<LLMDescription>().firstOrNull()?.description ?: ""
 
-/**
- * Special key used to wrap primitive arguments in JSON objects, to support tools with "primitive" args/results.
- */
 internal const val toolWrapperValueKey = "__wrapped_value__"
 
-/**
- * Converts a [SerialDescriptor] into a [ToolDescriptor] with metadata about a tool,
- * including its name, description, and parameters.
- *
- * @param toolName The name to assign to the resulting tool descriptor.
- * @param toolDescription An optional custom description for the tool. Defaults to the descriptor's annotation-based description if null.
- * @param valueDescription An optional description for value parameters of primitive types (not required for class-based
- * parameters with @LLMDescription annotation but recommended for String/Int/Float/List etc. tool parameters). If not
- * specified for a primitive input type, an empty description will be passed to LLM.
- * @return A [ToolDescriptor] representing the tool's schema, including its name, description, and any parameters.
- *
- *
- *
- * **Example:** if the current [SerialDescriptor] represents the following class:
- * ```kotlin
- * @Serializable
- * class Person(
- *      val name: String,
- *      @property:LLMDescription("Age of the user (between 5 and 99)")
- *      val age: Int
- * )
- * ```
- * ,then
- * ```kotlin
- * serializer<Person>().descriptor
- *     .asToolDescriptor(
- *         toolName = "getLocation",
- *         toolDescription = "Finds where the given Person is located"
- *     )
- * ```
- * would return the following `ToolDescriptor` :
- * ```kotlin
- * ToolDescriptor(
- *     name = "getLocation",
- *     description = "Finds where the given Person is located",
- *     requiredParameters = listOf(
- *         ToolParameterDescriptor(
- *             name = "name",
- *             description = "name",
- *             type = ToolParameterType.String
- *         ),
- *         ToolParameterDescriptor(
- *             name = "age",
- *             description = "Age of the user (between 5 and 99)",
- *             type = ToolParameterType.Integer
- *         )
- *     )
- * )
- * ```
- *
- * Or, alternatively, you can ommit the `toolDescription` parameter but provide it via `@LLMDescription` annotation of your class:
- *
- * ```kotlin
- * @Serializable
- * @LLMDescription("A tool to compile the final plan of the trip accepted by the user")
- * class TripPlan(
- *     @property:LLMDescription("Steps of the plan, containing destination, start date and end date of each jorney")
- *     val steps: List<PlanStep>,
- * )
- * ```
- * ,then
- * ```kotlin
- * serializer<TripPlan>().descriptor
- *     .asToolDescriptor(toolName = "provideTripPlan")
- * ```
- * would return the following `ToolDescriptor` :
- * ```kotlin
- * ToolDescriptor(
- *     name = "provideTripPlan",
- *     description = "A tool to compile the final plan of the trip accepted by the user",
- *     requiredParameters = listOf(
- *         ToolParameterDescriptor(
- *             name = "steps",
- *             description = "Steps of the plan, containing destination, start date and end date of each jorney",
- *             type = ToolParameterType.List(itemType = ToolParameterType.Object(
- *                ... // fields of `PlanStep`
- *             ))
- *         )
- *     )
- * )
- * ```
- */
 public fun SerialDescriptor.asToolDescriptor(
     toolName: String,
     toolDescription: String? = null,
@@ -145,7 +60,6 @@ public fun SerialDescriptor.asToolDescriptor(
             )
         }
 
-        // support FreeForm Object ToolDescriptor
         PolymorphicKind.SEALED,
         StructureKind.OBJECT,
         SerialKind.CONTEXTUAL,
@@ -159,10 +73,6 @@ public fun SerialDescriptor.asToolDescriptor(
     }
 }
 
-/**
- * Provides a custom serializer for tools, wrapping and unwrapping values that do not serialize into [JsonObject] into a
- * custom [JsonObject] with `value` key. This wrapping/unwrapping is needed because for LLM APIs tool arguments must always be [JsonObject].
- */
 public fun <T> KSerializer<T>.asToolDescriptorSerializer(): KSerializer<T> {
     val origSerializer = this
 
