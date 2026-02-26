@@ -14,7 +14,7 @@ import kotlinx.serialization.serializer
 internal val generator: SerializationClassJsonSchemaGenerator = SerializationClassJsonSchemaGenerator(
     introspectorConfig = SerializationClassSchemaIntrospector.Config(
         descriptionExtractor = { annotations ->
-            annotations.filterIsInstance<LLMDescription>().firstOrNull()?.value
+            annotations.filterIsInstance<LLMDescription>().firstOrNull()?.description
         },
     ),
 )
