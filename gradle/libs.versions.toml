@@ -1,5 +1,5 @@
 [versions]
-agp = "8.12.3"
+agp = "8.13.0"
 android-compileSdk = "36"
 android-minSdk = "24"
 android-targetSdk = "36"
@@ -19,6 +19,7 @@ ktor = "3.4.0"
 kotlinx-serialization-json = "1.10.0"
 kotlinx-io = "0.9.0"
 kotlinx-schema-generator = "0.3.2"
+maven-publish = "0.36.0"
 
 [libraries]
 components-resources = { module = "org.jetbrains.compose.components:components-resources", version.ref = "componentsResources" }
@@ -55,3 +56,4 @@ composeMultiplatform = { id = "org.jetbrains.compose", version.ref = "composeMul
 composeCompiler = { id = "org.jetbrains.kotlin.plugin.compose", version.ref = "kotlin" }
 kotlinMultiplatform = { id = "org.jetbrains.kotlin.multiplatform", version.ref = "kotlin" }
 kotlinSerialization = { id = "org.jetbrains.kotlin.plugin.serialization", version.ref = "kotlin" }
+mavenPublish = { id = "com.vanniktech.maven.publish", version.ref = "maven-publish" }

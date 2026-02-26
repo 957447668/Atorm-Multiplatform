@@ -1,11 +1,12 @@
-import org.jetbrains.kotlin.gradle.dsl.JvmTarget
-
 plugins {
     alias(libs.plugins.kotlinMultiplatform)
+    alias(libs.plugins.kotlinSerialization)
     alias(libs.plugins.androidLibrary)
 }
 
 kotlin {
+    explicitApi()
+
     androidTarget()
 
     jvm()
@@ -24,20 +25,18 @@ kotlin {
 
     sourceSets {
         commonTest.dependencies {
-            implementation(projects.atormOpenai)
+            implementation(projects.atormCore)
+            implementation(projects.atormAgent)
+            implementation(projects.atormDoubao)
 
             implementation(libs.kotlin.test)
             implementation(libs.kotlinx.coroutines.core)
             implementation(libs.kotlinx.serialization.json)
-        }
-        jvmMain.dependencies {
-            implementation(libs.ktor.client.okhttp)
-        }
-        androidMain.dependencies {
-            implementation(libs.ktor.client.okhttp)
-        }
-        nativeMain.dependencies {
+
             implementation(libs.ktor.client.cio)
+        }
+        jvmTest.dependencies {
+            implementation(libs.ktor.client.okhttp)
         }
     }
 }

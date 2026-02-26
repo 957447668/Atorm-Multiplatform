@@ -28,15 +28,12 @@ dependencyResolutionManagement {
     }
 }
 
-plugins {
-    id("org.gradle.toolchains.foojay-resolver-convention") version "1.0.0"
-}
-
 include(":composeApp")
 include(":openai-client")
 include(":atorm-core")
 include(":atorm-core-test")
 include(":atorm-agent")
+include(":atorm-agent-test")
 include(":atorm-doubao")
 include(":atorm-doubao-test")
 include(":atorm-openai")

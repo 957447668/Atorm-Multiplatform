@@ -1,18 +1,13 @@
-import org.jetbrains.kotlin.gradle.dsl.JvmTarget
-
 plugins {
     alias(libs.plugins.kotlinMultiplatform)
     alias(libs.plugins.androidLibrary)
+    alias(libs.plugins.mavenPublish)
 }
 
 kotlin {
     explicitApi()
 
-    androidTarget {
-        compilerOptions {
-            jvmTarget.set(JvmTarget.JVM_11)
-        }
-    }
+    androidTarget()
 
     jvm()
 
@@ -45,5 +40,38 @@ android {
     }
     defaultConfig {
         minSdk = libs.versions.android.minSdk.get().toInt()
+    }
+}
+
+mavenPublishing {
+    publishToMavenCentral()
+    signAllPublications()
+
+    coordinates(libs.versions.uiToolingPreview.get(), "atorm-agent", version.toString())
+
+    pom {
+        name = "atorm-agent"
+        description = "atorm-agent"
+        inceptionYear = "2026"
+        url = "https://gitee.com/ZXHHYJ/atorm"
+        licenses {
+            license {
+                name = "The Apache License, Version 2.0"
+                url = "https://www.apache.org/licenses/LICENSE-2.0.txt"
+                distribution = "https://www.apache.org/licenses/LICENSE-2.0.txt"
+            }
+        }
+        developers {
+            developer {
+                id = "ZXHHYJ"
+                name = "ZXHHYJ"
+                url = "https://gitee.com/ZXHHYJ"
+            }
+        }
+        scm {
+            url = "https://gitee.com/ZXHHYJ/atorm"
+            connection = "scm:git:git://gitee.com:ZXHHYJ/atorm.git"
+            developerConnection = "scm:git:ssh://git@gitee.com:ZXHHYJ/atorm.git"
+        }
     }
 }

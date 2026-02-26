@@ -36,11 +36,11 @@ import kotlin.time.Clock
 import kotlin.time.Duration.Companion.seconds
 
 public class DoubaoLLMClient(apiKey: String, clock: Clock = Clock.System) : LLMClient {
-    private val openAI = _root_ide_package_.com.zxhhyj.atorm.openai.client.OpenAI(
-        _root_ide_package_.com.zxhhyj.atorm.openai.client.OpenAIConfig(
+    private val openAI = OpenAI(
+        OpenAIConfig(
             token = apiKey,
-            timeout = _root_ide_package_.com.zxhhyj.atorm.openai.api.http.Timeout(socket = 60.seconds),
-            host = _root_ide_package_.com.zxhhyj.atorm.openai.client.OpenAIHost("https://ark.cn-beijing.volces.com/api/v3/")
+            timeout = Timeout(socket = 60.seconds),
+            host = OpenAIHost("https://ark.cn-beijing.volces.com/api/v3/")
         )
     )
 
