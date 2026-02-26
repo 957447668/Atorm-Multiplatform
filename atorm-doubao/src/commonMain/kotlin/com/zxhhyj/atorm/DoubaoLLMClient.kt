@@ -27,7 +27,9 @@ import com.zxhhyj.atorm.openai.client.OpenAIHost
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.flow.onCompletion
+import kotlinx.serialization.json.add
 import kotlinx.serialization.json.addAll
+import kotlinx.serialization.json.buildJsonArray
 import kotlinx.serialization.json.buildJsonObject
 import kotlinx.serialization.json.put
 import kotlinx.serialization.json.putJsonArray
@@ -71,18 +73,45 @@ public class DoubaoLLMClient(apiKey: String, clock: Clock = Clock.System) : LLMC
                             putJsonObject("properties") {
                                 (tool.requiredParameters + tool.optionalParameters).forEach {
                                     putJsonObject(it.name) {
-                                        put(
-                                            "type", when (it.type) {
-                                                ToolParameterType.Boolean -> "boolean"
-                                                is ToolParameterType.Enum -> "enum"
-                                                ToolParameterType.Integer -> "integer"
-                                                is ToolParameterType.List -> "array"
-                                                ToolParameterType.Null -> "null"
-                                                is ToolParameterType.Object -> "object"
-                                                ToolParameterType.String -> "string"
-                                                else -> TODO()
+                                        when (val parameterType = it.type) {
+                                            is ToolParameterType.AnyOf -> TODO()
+                                            ToolParameterType.Boolean -> {
+                                                put("type", "boolean")
                                             }
-                                        )
+
+                                            is ToolParameterType.Enum -> {
+                                                put("type", "string")
+                                                put("enum", buildJsonArray {
+                                                    parameterType.entries.forEach {
+                                                        add(it)
+                                                    }
+                                                })
+                                            }
+
+                                            ToolParameterType.Float -> {
+                                                put("type", "number")
+                                            }
+
+                                            ToolParameterType.Integer -> {
+                                                put("type", "integer")
+                                            }
+
+                                            is ToolParameterType.List -> {
+                                                put("type", "array")
+                                            }
+
+                                            ToolParameterType.Null -> {
+                                                put("type", "null")
+                                            }
+
+                                            is ToolParameterType.Object -> {
+                                                put("type", "object")
+                                            }
+
+                                            ToolParameterType.String -> {
+                                                put("type", "string")
+                                            }
+                                        }
                                         put("description", it.description)
                                     }
                                 }

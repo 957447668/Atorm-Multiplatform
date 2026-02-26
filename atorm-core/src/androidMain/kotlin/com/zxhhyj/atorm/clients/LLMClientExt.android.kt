@@ -11,7 +11,7 @@ import kotlinx.serialization.json.Json
 import kotlinx.serialization.serializer
 
 @PublishedApi
-internal val generator: SerializationClassJsonSchemaGenerator = SerializationClassJsonSchemaGenerator(
+internal val schemaGenerator: SerializationClassJsonSchemaGenerator = SerializationClassJsonSchemaGenerator(
     introspectorConfig = SerializationClassSchemaIntrospector.Config(
         descriptionExtractor = { annotations ->
             annotations.filterIsInstance<LLMDescription>().firstOrNull()?.description
@@ -20,7 +20,7 @@ internal val generator: SerializationClassJsonSchemaGenerator = SerializationCla
 )
 
 @PublishedApi
-internal val json: Json = Json { prettyPrint = true }
+internal val schemaJson: Json = Json { prettyPrint = true }
 
 public actual suspend inline fun <reified T> LLMClient.executeStructured(
     prompt: Prompt,
@@ -29,7 +29,7 @@ public actual suspend inline fun <reified T> LLMClient.executeStructured(
 ): T {
     val serializer = serializer<T>()
 
-    val jsonSchema = generator.generateSchema(serializer.descriptor)
+    val jsonSchema = schemaGenerator.generateSchema(serializer.descriptor)
     val jsonObject = jsonSchema.encodeToJsonObject()
 
     val responses = execute(
@@ -39,5 +39,5 @@ public actual suspend inline fun <reified T> LLMClient.executeStructured(
         model = model
     ).filterNot { it is Message.Reasoning }.single()
 
-    return json.decodeFromString<T>(responses.content)
+    return schemaJson.decodeFromString<T>(responses.content)
 }

@@ -22,6 +22,9 @@ public sealed class ToolParameterType(public val name: kotlin.String) {
 
     public data class Enum(val entries: Array<kotlin.String>) : ToolParameterType("ENUM") {
         override fun equals(other: Any?): kotlin.Boolean = other is Enum && this.entries.contentEquals(other.entries)
+        override fun hashCode(): Int {
+            return entries.contentHashCode()
+        }
     }
 
     public data class List(val itemsType: ToolParameterType) : ToolParameterType("ARRAY")

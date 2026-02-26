@@ -7,6 +7,7 @@ import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.runBlocking
 import kotlinx.serialization.json.buildJsonObject
 import kotlinx.serialization.json.put
+import tools.CarControlTool
 import tools.NavigateTool
 import tools.SearchMusicTool
 import tools.SearchVideoTool
@@ -73,7 +74,15 @@ class SimpleAgentTest {
     @Test
     fun benchmark() {
         runBlocking {
-            val tools = listOf(NavigateTool, SearchMusicTool, SearchVideoTool, SearchWebTool, StoryTool, WeatherTool)
+            val tools = listOf(
+                CarControlTool,
+                NavigateTool,
+                SearchMusicTool,
+                SearchVideoTool,
+                SearchWebTool,
+                StoryTool,
+                WeatherTool
+            )
 
             llmClient.execute(
                 prompt = prompt(params = LLMParams(additionalProperties = mapOf("thinking" to buildJsonObject {
@@ -113,6 +122,20 @@ class SimpleAgentTest {
                     tools = tools.map { it.descriptor }
                 ).first { it is StreamFrame.ToolCall }
                 println("首个工具调用: ${(startTime - Clock.System.now()).absoluteValue}")
+            }
+
+            Clock.System.now().let { startTime ->
+                llmClient.executeStreaming(
+                    prompt = prompt(params = LLMParams(additionalProperties = mapOf("thinking" to buildJsonObject {
+                        put("type", "disabled")
+                    }))) {
+                        system(systemPrompt)
+                        user("帮我打开车窗")
+                    },
+                    model = model,
+                    tools = tools.map { it.descriptor }
+                ).first { it is StreamFrame.ToolCall }
+                println("第二个工具调用: ${(startTime - Clock.System.now()).absoluteValue}")
             }
         }
     }
