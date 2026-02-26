@@ -1,8 +1,11 @@
 import com.zxhhyj.atorm.DoubaoLLMClient
 import com.zxhhyj.atorm.core.llm.LLModel
 import com.zxhhyj.atorm.core.prompt.dsl.prompt
+import com.zxhhyj.atorm.core.prompt.message.Message
+import com.zxhhyj.atorm.core.prompt.message.ResponseMetaInfo
 import com.zxhhyj.atorm.core.prompt.params.LLMParams
 import com.zxhhyj.atorm.core.prompt.streaming.StreamFrame
+import kotlinx.coroutines.flow.filterIsInstance
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.runBlocking
 import kotlinx.serialization.json.buildJsonObject
@@ -19,7 +22,7 @@ import kotlin.time.Clock
 
 class SimpleAgentTest {
 
-    private val llmClient = DoubaoLLMClient(TODO("需要API KEY"))
+    private val llmClient = DoubaoLLMClient("528f58b3-68d6-4253-a19e-28e9bc6223e8")
 
     private val model = LLModel(id = "doubao-seed-2-0-mini-260215", contextLength = Long.MAX_VALUE)
 
@@ -111,7 +114,7 @@ class SimpleAgentTest {
             }
 
             Clock.System.now().let { startTime ->
-                llmClient.executeStreaming(
+                val firstToolCall = llmClient.executeStreaming(
                     prompt = prompt(params = LLMParams(additionalProperties = mapOf("thinking" to buildJsonObject {
                         put("type", "disabled")
                     }))) {
@@ -120,22 +123,33 @@ class SimpleAgentTest {
                     },
                     model = model,
                     tools = tools.map { it.descriptor }
-                ).first { it is StreamFrame.ToolCall }
+                ).filterIsInstance<StreamFrame.ToolCall>().first()
                 println("首个工具调用: ${(startTime - Clock.System.now()).absoluteValue}")
-            }
 
-            Clock.System.now().let { startTime ->
-                llmClient.executeStreaming(
-                    prompt = prompt(params = LLMParams(additionalProperties = mapOf("thinking" to buildJsonObject {
-                        put("type", "disabled")
-                    }))) {
-                        system(systemPrompt)
-                        user("帮我打开车窗")
-                    },
-                    model = model,
-                    tools = tools.map { it.descriptor }
-                ).first { it is StreamFrame.ToolCall }
-                println("第二个工具调用: ${(startTime - Clock.System.now()).absoluteValue}")
+                Clock.System.now().let { startTime ->
+                    llmClient.executeStreaming(
+                        prompt = prompt(params = LLMParams(additionalProperties = mapOf("thinking" to buildJsonObject {
+                            put("type", "disabled")
+                        }))) {
+                            system(systemPrompt)
+                            tool {
+                                call(
+                                    Message.Tool.Call(
+                                        firstToolCall.id,
+                                        firstToolCall.name,
+                                        firstToolCall.content,
+                                        ResponseMetaInfo.Empty
+                                    )
+                                )
+                                result(firstToolCall.id, firstToolCall.name, "OK")
+                            }
+                            user("我想听MandySa的歌")
+                        },
+                        model = model,
+                        tools = tools.map { it.descriptor }
+                    ).first { it is StreamFrame.ToolCall }
+                    println("第二个工具调用: ${(startTime - Clock.System.now()).absoluteValue}")
+                }
             }
         }
     }

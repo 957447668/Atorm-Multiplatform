@@ -13,10 +13,12 @@ import com.zxhhyj.atorm.openai.api.chat.ChatCompletionRequest
 import com.zxhhyj.atorm.openai.api.chat.ChatMessage
 import com.zxhhyj.atorm.openai.api.chat.ChatResponseFormat
 import com.zxhhyj.atorm.openai.api.chat.ChatRole
+import com.zxhhyj.atorm.openai.api.chat.FunctionCall
 import com.zxhhyj.atorm.openai.api.chat.FunctionTool
 import com.zxhhyj.atorm.openai.api.chat.JsonSchema
 import com.zxhhyj.atorm.openai.api.chat.Tool
 import com.zxhhyj.atorm.openai.api.chat.ToolCall
+import com.zxhhyj.atorm.openai.api.chat.ToolId
 import com.zxhhyj.atorm.openai.api.chat.ToolType
 import com.zxhhyj.atorm.openai.api.core.Parameters
 import com.zxhhyj.atorm.openai.api.http.Timeout
@@ -50,17 +52,54 @@ public class DoubaoLLMClient(apiKey: String, clock: Clock = Clock.System) : LLMC
         ChatCompletionRequest(
             model = ModelId(model.id),
             messages = prompt.messages.map {
-                val role = when (it.role) {
-                    Message.Role.System -> ChatRole.System
-                    Message.Role.User -> ChatRole.User
-                    Message.Role.Assistant -> ChatRole.Assistant
-                    Message.Role.Reasoning -> TODO()
-                    Message.Role.Tool -> ChatRole.Tool
+                when (it) {
+                    is Message.System -> {
+                        ChatMessage(
+                            role = ChatRole.System,
+                            content = it.content
+                        )
+                    }
+
+                    is Message.User -> {
+                        ChatMessage(
+                            role = ChatRole.User,
+                            content = it.content
+                        )
+                    }
+
+                    is Message.Assistant -> {
+                        ChatMessage(
+                            role = ChatRole.Assistant,
+                            content = it.content
+                        )
+                    }
+
+                    is Message.Reasoning -> {
+                        TODO()
+                    }
+
+                    is Message.Tool.Call -> {
+                        ChatMessage.Assistant(
+                            toolCalls = listOf(
+                                ToolCall.Function(
+                                    id = ToolId(it.id!!),
+                                    function = FunctionCall(
+                                        nameOrNull = it.tool,
+                                        argumentsOrNull = it.content
+                                    )
+                                )
+                            )
+                        )
+                    }
+
+                    is Message.Tool.Result -> {
+                        ChatMessage(
+                            role = ChatRole.Tool,
+                            toolCallId = ToolId(it.id!!),
+                            content = it.content
+                        )
+                    }
                 }
-                ChatMessage(
-                    role = role,
-                    content = it.content
-                )
             },
             tools = tools.map { tool ->
                 Tool(
