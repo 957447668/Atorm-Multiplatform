@@ -1,5 +1,3 @@
-import org.jetbrains.kotlin.gradle.dsl.JvmTarget
-
 plugins {
     alias(libs.plugins.kotlinMultiplatform)
     alias(libs.plugins.androidLibrary)
@@ -30,6 +28,9 @@ kotlin {
             implementation(libs.kotlinx.coroutines.core)
             implementation(libs.kotlinx.serialization.json)
             implementation(libs.kotlinx.io.core)
+        }
+        androidMain.dependencies {
+            implementation(libs.kotlinx.schema.generator.json)
         }
         jvmMain.dependencies {
             implementation(libs.kotlinx.schema.generator.json)
