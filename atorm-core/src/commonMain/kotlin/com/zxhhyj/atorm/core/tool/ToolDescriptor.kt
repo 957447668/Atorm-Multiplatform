@@ -6,17 +6,6 @@ public open class ToolDescriptor(
     public val requiredParameters: List<ToolParameterDescriptor> = emptyList(),
     public val optionalParameters: List<ToolParameterDescriptor> = emptyList(),
 ) {
-    /**
-     * Creates a copy of the current ToolDescriptor with the option to modify specific attributes.
-     *
-     * @param name The name of the tool. Defaults to the current tool's name if not provided.
-     * @param description The description of the tool. Defaults to the current tool's description if not provided.
-     * @param requiredParameters A list of ToolParameterDescriptor representing the required parameters for the tool.
-     * Defaults to the current required parameters if not provided.
-     * @param optionalParameters A list of ToolParameterDescriptor representing the optional parameters for the tool.
-     * Defaults to the current optional parameters if not provided.
-     * @return A new instance of ToolDescriptor with the updated attributes.
-     */
     public fun copy(
         name: String = this.name,
         description: String = this.description,
