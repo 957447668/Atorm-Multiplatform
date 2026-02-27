@@ -5,17 +5,17 @@ import com.zxhhyj.atorm.clients.LLMDescription
 import kotlinx.serialization.Serializable
 import kotlinx.serialization.builtins.serializer
 
-object SearchWebTool : Tool<SearchWebTool.Args, String>(
+public object SearchMusicTool : Tool<SearchMusicTool.Args, String>(
     argsSerializer = Args.serializer(),
     resultSerializer = String.serializer(),
-    name = "SearchWebTool",
-    description = "网络搜索工具"
+    name = "SearchMusicTool",
+    description = "音乐搜索工具"
 ) {
 
     @Serializable
-    data class Args(@property:LLMDescription("搜索关键词") val query: String)
+    public data class Args(@property:LLMDescription("音乐关键词") val query: String)
 
     override suspend fun execute(args: Args): String {
-        return "已搜索网络: ${args.query}"
+        return "已搜索音乐: ${args.query}"
     }
 }

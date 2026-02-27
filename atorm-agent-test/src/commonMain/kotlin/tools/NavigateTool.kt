@@ -5,17 +5,17 @@ import com.zxhhyj.atorm.clients.LLMDescription
 import kotlinx.serialization.Serializable
 import kotlinx.serialization.builtins.serializer
 
-object SearchVideoTool : Tool<SearchVideoTool.Args, String>(
+public object NavigateTool : Tool<NavigateTool.Args, String>(
     argsSerializer = Args.serializer(),
     resultSerializer = String.serializer(),
-    name = "SearchViddeoTool",
-    description = "视频搜索工具"
+    name = "NavigateTool",
+    description = "导航工具"
 ) {
 
     @Serializable
-    data class Args(@property:LLMDescription("视频关键词") val query: String)
+    public data class Args(@property:LLMDescription("目的地关键词") val query: String)
 
     override suspend fun execute(args: Args): String {
-        return "已搜索视频: ${args.query}"
+        return "已导航至: ${args.query}"
     }
 }

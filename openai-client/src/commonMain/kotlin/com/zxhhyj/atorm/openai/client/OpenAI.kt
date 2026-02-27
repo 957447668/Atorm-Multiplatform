@@ -33,7 +33,7 @@ public fun OpenAI(
     timeout: Timeout = Timeout(socket = 30.seconds),
     organization: String? = null,
     headers: Map<String, String> = emptyMap(),
-    host: OpenAIHost = OpenAIHost.OpenAI,
+    host: OpenAIHost,
     proxy: ProxyConfig? = null,
     retry: RetryStrategy = RetryStrategy(),
     httpClientConfig: HttpClientConfig<*>.() -> Unit = {}

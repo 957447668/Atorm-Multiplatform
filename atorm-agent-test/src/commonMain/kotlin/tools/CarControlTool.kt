@@ -5,7 +5,7 @@ import com.zxhhyj.atorm.clients.LLMDescription
 import kotlinx.serialization.Serializable
 import kotlinx.serialization.builtins.serializer
 
-object CarControlTool : Tool<CarControlTool.Args, String>(
+public object CarControlTool : Tool<CarControlTool.Args, String>(
     argsSerializer = Args.serializer(),
     resultSerializer = String.serializer(),
     name = "CarControlTool",
@@ -13,9 +13,9 @@ object CarControlTool : Tool<CarControlTool.Args, String>(
 ) {
 
     @Serializable
-    data class Args(@property:LLMDescription("控制的设备") val device: Device) {
+    public data class Args(@property:LLMDescription("控制的设备") val device: Device) {
         @Serializable
-        enum class Device {
+        public enum class Device {
             AIR_CONDITIONER,
             WINDOW,
             HEADLIGHT,

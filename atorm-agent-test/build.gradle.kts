@@ -24,17 +24,19 @@ kotlin {
     }
 
     sourceSets {
-        commonTest.dependencies {
+        commonMain.dependencies {
             implementation(projects.atormCore)
             implementation(projects.atormAgent)
             implementation(projects.atormDoubao)
             implementation(projects.atormOpenai)
 
-            implementation(libs.kotlin.test)
             implementation(libs.kotlinx.coroutines.core)
             implementation(libs.kotlinx.serialization.json)
 
             implementation(libs.ktor.client.cio)
+        }
+        commonTest.dependencies {
+            implementation(libs.kotlin.test)
         }
         jvmTest.dependencies {
             implementation(libs.ktor.client.okhttp)
