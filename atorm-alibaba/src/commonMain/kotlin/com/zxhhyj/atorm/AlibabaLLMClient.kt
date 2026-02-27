@@ -16,12 +16,13 @@ import com.zxhhyj.atrom.utils.buildChatCompletionRequest
 import io.ktor.client.HttpClient
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.flow
+import kotlinx.coroutines.flow.onCompletion
 import kotlinx.serialization.json.buildJsonObject
 import kotlin.time.Clock
 
-public class OpenAILLMClient(
+public class AlibabaLLMClient(
     apiKey: String,
-    settings: OpenAIClientSettings = OpenAIClientSettings(),
+    settings: AlibabaClientSettings = AlibabaClientSettings(),
     baseClient: HttpClient = HttpClient(),
     clock: Clock = Clock.System
 ) : LLMClient {
@@ -74,19 +75,26 @@ public class OpenAILLMClient(
         tools: List<ToolDescriptor>
     ): Flow<StreamFrame> {
         return flow {
+            var lastFrame: StreamFrame? = null
+            var lastTooCallIndex: Int? = null
             openAI.chatCompletions(
                 buildChatCompletionRequest(prompt, model, tools),
                 buildJsonObject {
                     prompt.params.additionalProperties?.forEach {
                         put(it.key, it.value)
                     }
-                }).collect {
+                }).onCompletion {
+                lastFrame?.let {
+                    emit(it)
+                }
+            }.collect {
                 it.choices.forEach { chunk ->
                     when {
                         chunk.delta?.reasoningContent?.isNotEmpty() == true -> {}
 
                         chunk.delta?.content?.isNotEmpty() == true -> {
                             emit(StreamFrame.Append(chunk.delta!!.content!!))
+                            lastFrame = null
                         }
 
                         chunk.delta?.toolCalls?.isNotEmpty() == true -> {
@@ -94,18 +102,30 @@ public class OpenAILLMClient(
                             val name = StringBuilder()
                             val content = StringBuilder()
                             chunk.delta!!.toolCalls!!.forEach { callChunk ->
+                                if (lastTooCallIndex != null && lastTooCallIndex != callChunk.index) {
+                                    emit(lastFrame!!)
+                                    lastFrame = null
+                                    lastTooCallIndex = null
+                                } else {
+                                    lastTooCallIndex = callChunk.index
+                                }
                                 callChunk.id?.let {
                                     id.append(it.id)
                                 }
                                 callChunk.function?.nameOrNull?.let { name.append(it) }
                                 callChunk.function?.argumentsOrNull?.let { content.append(it) }
                             }
-                            emit(
+
+                            lastFrame = (lastFrame as StreamFrame.ToolCall?)?.let {
                                 StreamFrame.ToolCall(
-                                    id.toString(),
-                                    name.toString(),
-                                    content.toString()
+                                    it.id + id.toString(),
+                                    it.name + name.toString(),
+                                    it.content + content.toString()
                                 )
+                            } ?: StreamFrame.ToolCall(
+                                id.toString(),
+                                name.toString(),
+                                content.toString()
                             )
                         }
                     }

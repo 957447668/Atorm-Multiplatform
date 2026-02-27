@@ -25,12 +25,9 @@ kotlin {
 
     sourceSets {
         commonMain.dependencies {
-            api(projects.atormCore)
+            implementation(projects.atormCore)
             implementation(projects.openaiClient)
-            implementation(projects.atormUtils)
-            implementation(libs.ktor.client.core)
             implementation(libs.kotlinx.serialization.json)
-            implementation(libs.kotlinx.coroutines.core)
         }
         commonTest.dependencies {
             implementation(libs.kotlin.test)
@@ -54,11 +51,11 @@ mavenPublishing {
     publishToMavenCentral()
     signAllPublications()
 
-    coordinates(group.toString(), "atorm-openai", version.toString())
+    coordinates(group.toString(), "atorm-utils", version.toString())
 
     pom {
-        name = "atorm-openai"
-        description = "atorm-openai"
+        name = "atorm-utils"
+        description = "atorm-utils"
         inceptionYear = "2026"
         url = "https://gitee.com/ZXHHYJ/atorm"
         licenses {

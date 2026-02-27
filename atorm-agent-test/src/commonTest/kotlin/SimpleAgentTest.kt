@@ -22,9 +22,9 @@ import kotlin.time.Clock
 
 class SimpleAgentTest {
 
-    private val llmClient = DoubaoLLMClient("528f58b3-68d6-4253-a19e-28e9bc6223e8")
+    private val llmClient = DoubaoLLMClient(TODO("需要API KEY"))
 
-    private val model = LLModel(id = "doubao-seed-2-0-mini-260215", contextLength = Long.MAX_VALUE)
+    private val model = LLModel(id = "doubao-seed-1-6-flash-250828", contextLength = Long.MAX_VALUE)
 
     private val systemPrompt =
         """

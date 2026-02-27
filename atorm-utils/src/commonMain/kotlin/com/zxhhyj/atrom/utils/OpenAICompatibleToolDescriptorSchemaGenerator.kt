@@ -1,4 +1,4 @@
-package com.zxhhyj.atrom.openai.utils
+package com.zxhhyj.atrom.utils
 
 import com.zxhhyj.atorm.core.tool.ToolDescriptor
 import com.zxhhyj.atorm.core.tool.ToolParameterDescriptor

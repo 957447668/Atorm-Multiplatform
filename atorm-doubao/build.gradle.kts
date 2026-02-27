@@ -27,7 +27,7 @@ kotlin {
         commonMain.dependencies {
             api(projects.atormCore)
             implementation(projects.openaiClient)
-            implementation(projects.atormOpenaiUtils)
+            implementation(projects.atormUtils)
             implementation(libs.ktor.client.core)
             implementation(libs.kotlinx.serialization.json)
             implementation(libs.kotlinx.coroutines.core)

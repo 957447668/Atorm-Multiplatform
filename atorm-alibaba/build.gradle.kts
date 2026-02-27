@@ -25,11 +25,12 @@ kotlin {
 
     sourceSets {
         commonMain.dependencies {
-            implementation(projects.atormCore)
+            api(projects.atormCore)
+            implementation(projects.openaiClient)
+            implementation(projects.atormUtils)
+            implementation(libs.ktor.client.core)
             implementation(libs.kotlinx.serialization.json)
-        }
-        commonTest.dependencies {
-            implementation(libs.kotlin.test)
+            implementation(libs.kotlinx.coroutines.core)
         }
     }
 }
@@ -50,11 +51,11 @@ mavenPublishing {
     publishToMavenCentral()
     signAllPublications()
 
-    coordinates(group.toString(), "atorm-openai-utils", version.toString())
+    coordinates(group.toString(), "atorm-alibaba", version.toString())
 
     pom {
-        name = "atorm-openai-utils"
-        description = "atorm-openai-utils"
+        name = "atorm-alibaba"
+        description = "atorm-alibaba"
         inceptionYear = "2026"
         url = "https://gitee.com/ZXHHYJ/atorm"
         licenses {
