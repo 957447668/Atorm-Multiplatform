@@ -28,6 +28,7 @@ kotlin {
             implementation(projects.atormCore)
             implementation(projects.atormAgent)
             implementation(projects.atormDoubao)
+            implementation(projects.atormOpenai)
 
             implementation(libs.kotlin.test)
             implementation(libs.kotlinx.coroutines.core)

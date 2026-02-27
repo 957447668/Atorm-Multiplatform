@@ -8,7 +8,6 @@ import com.zxhhyj.atorm.core.prompt.message.ResponseMetaInfo
 import com.zxhhyj.atorm.core.prompt.streaming.ModerationResult
 import com.zxhhyj.atorm.core.prompt.streaming.StreamFrame
 import com.zxhhyj.atorm.core.tool.ToolDescriptor
-import com.zxhhyj.atorm.core.tool.ToolParameterType
 import com.zxhhyj.atorm.openai.api.chat.ChatCompletionRequest
 import com.zxhhyj.atorm.openai.api.chat.ChatMessage
 import com.zxhhyj.atorm.openai.api.chat.ChatResponseFormat
@@ -21,34 +20,38 @@ import com.zxhhyj.atorm.openai.api.chat.ToolCall
 import com.zxhhyj.atorm.openai.api.chat.ToolId
 import com.zxhhyj.atorm.openai.api.chat.ToolType
 import com.zxhhyj.atorm.openai.api.core.Parameters
-import com.zxhhyj.atorm.openai.api.http.Timeout
 import com.zxhhyj.atorm.openai.api.model.ModelId
 import com.zxhhyj.atorm.openai.client.OpenAI
 import com.zxhhyj.atorm.openai.client.OpenAIConfig
 import com.zxhhyj.atorm.openai.client.OpenAIHost
+import com.zxhhyj.atrom.openai.utils.OpenAICompatibleToolDescriptorSchemaGenerator
+import io.ktor.client.HttpClient
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.flow.onCompletion
-import kotlinx.serialization.json.add
-import kotlinx.serialization.json.addAll
-import kotlinx.serialization.json.buildJsonArray
 import kotlinx.serialization.json.buildJsonObject
-import kotlinx.serialization.json.put
-import kotlinx.serialization.json.putJsonArray
-import kotlinx.serialization.json.putJsonObject
 import kotlin.time.Clock
-import kotlin.time.Duration.Companion.seconds
 
-public class DoubaoLLMClient(apiKey: String, clock: Clock = Clock.System) : LLMClient {
+public class DoubaoLLMClient(
+    apiKey: String,
+    settings: DoubaoClientSettings = DoubaoClientSettings(),
+    baseClient: HttpClient = HttpClient(),
+    clock: Clock = Clock.System
+) : LLMClient {
     private val openAI = OpenAI(
         OpenAIConfig(
             token = apiKey,
-            timeout = Timeout(socket = 60.seconds),
-            host = OpenAIHost("https://ark.cn-beijing.volces.com/api/v3/")
+            timeout = settings.timeout,
+            host = OpenAIHost(settings.baseUrl),
+            engine = baseClient.engine
         )
     )
 
-    private fun buildChatCompletionRequest(prompt: Prompt, model: LLModel, tools: List<ToolDescriptor>) =
+    private fun buildChatCompletionRequest(
+        prompt: Prompt,
+        model: LLModel,
+        tools: List<ToolDescriptor>
+    ) =
         ChatCompletionRequest(
             model = ModelId(model.id),
             messages = prompt.messages.map {
@@ -107,58 +110,12 @@ public class DoubaoLLMClient(apiKey: String, clock: Clock = Clock.System) : LLMC
                     FunctionTool(
                         name = tool.name,
                         description = tool.description,
-                        parameters = Parameters.buildJsonObject {
-                            put("type", "object")
-                            putJsonObject("properties") {
-                                (tool.requiredParameters + tool.optionalParameters).forEach {
-                                    putJsonObject(it.name) {
-                                        when (val parameterType = it.type) {
-                                            is ToolParameterType.AnyOf -> TODO()
-                                            ToolParameterType.Boolean -> {
-                                                put("type", "boolean")
-                                            }
-
-                                            is ToolParameterType.Enum -> {
-                                                put("type", "string")
-                                                put("enum", buildJsonArray {
-                                                    parameterType.entries.forEach {
-                                                        add(it)
-                                                    }
-                                                })
-                                            }
-
-                                            ToolParameterType.Float -> {
-                                                put("type", "number")
-                                            }
-
-                                            ToolParameterType.Integer -> {
-                                                put("type", "integer")
-                                            }
-
-                                            is ToolParameterType.List -> {
-                                                put("type", "array")
-                                            }
-
-                                            ToolParameterType.Null -> {
-                                                put("type", "null")
-                                            }
-
-                                            is ToolParameterType.Object -> {
-                                                put("type", "object")
-                                            }
-
-                                            ToolParameterType.String -> {
-                                                put("type", "string")
-                                            }
-                                        }
-                                        put("description", it.description)
-                                    }
-                                }
-                            }
-                            putJsonArray("required") {
-                                addAll(tool.requiredParameters.map { it.name })
-                            }
-                        })
+                        parameters = Parameters(
+                            OpenAICompatibleToolDescriptorSchemaGenerator.generate(
+                                tool
+                            )
+                        )
+                    )
                 )
             },
             responseFormat = prompt.params.schema?.let {
@@ -177,11 +134,13 @@ public class DoubaoLLMClient(apiKey: String, clock: Clock = Clock.System) : LLMC
         model: LLModel,
         tools: List<ToolDescriptor>
     ): List<Message.Response> {
-        val chatCompletion = openAI.chatCompletion(buildChatCompletionRequest(prompt, model, tools), buildJsonObject {
-            prompt.params.additionalProperties?.forEach {
-                put(it.key, it.value)
-            }
-        })
+        val chatCompletion = openAI.chatCompletion(
+            buildChatCompletionRequest(prompt, model, tools),
+            buildJsonObject {
+                prompt.params.additionalProperties?.forEach {
+                    put(it.key, it.value)
+                }
+            })
         return buildList {
             chatCompletion.choices.forEach { choice ->
                 choice.message.reasoningContent?.let {
@@ -204,15 +163,21 @@ public class DoubaoLLMClient(apiKey: String, clock: Clock = Clock.System) : LLMC
         }
     }
 
-    override fun executeStreaming(prompt: Prompt, model: LLModel, tools: List<ToolDescriptor>): Flow<StreamFrame> {
+    override fun executeStreaming(
+        prompt: Prompt,
+        model: LLModel,
+        tools: List<ToolDescriptor>
+    ): Flow<StreamFrame> {
         return flow {
             var lastFrame: StreamFrame? = null
             var lastTooCallIndex: Int? = null
-            openAI.chatCompletions(buildChatCompletionRequest(prompt, model, tools), buildJsonObject {
-                prompt.params.additionalProperties?.forEach {
-                    put(it.key, it.value)
-                }
-            }).onCompletion {
+            openAI.chatCompletions(
+                buildChatCompletionRequest(prompt, model, tools),
+                buildJsonObject {
+                    prompt.params.additionalProperties?.forEach {
+                        put(it.key, it.value)
+                    }
+                }).onCompletion {
                 lastFrame?.let {
                     emit(it)
                 }
@@ -251,7 +216,11 @@ public class DoubaoLLMClient(apiKey: String, clock: Clock = Clock.System) : LLMC
                                     it.name + name.toString(),
                                     it.content + content.toString()
                                 )
-                            } ?: StreamFrame.ToolCall(id.toString(), name.toString(), content.toString())
+                            } ?: StreamFrame.ToolCall(
+                                id.toString(),
+                                name.toString(),
+                                content.toString()
+                            )
                         }
                     }
                 }
