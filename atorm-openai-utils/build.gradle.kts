@@ -50,11 +50,11 @@ mavenPublishing {
     publishToMavenCentral()
     signAllPublications()
 
-    coordinates(group.toString(), "atorm-openai", version.toString())
+    coordinates(group.toString(), "atorm-openai-utils", version.toString())
 
     pom {
-        name = "atorm-openai"
-        description = "atorm-openai"
+        name = "atorm-openai-utils"
+        description = "atorm-openai-utils"
         inceptionYear = "2026"
         url = "https://gitee.com/ZXHHYJ/atorm"
         licenses {
