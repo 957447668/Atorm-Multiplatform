@@ -3,6 +3,7 @@ package com.zxhhyj.atrom.utils
 import com.zxhhyj.atorm.core.llm.LLModel
 import com.zxhhyj.atorm.core.prompt.Prompt
 import com.zxhhyj.atorm.core.prompt.message.Message
+import com.zxhhyj.atorm.core.prompt.params.LLMParams
 import com.zxhhyj.atorm.core.tool.ToolDescriptor
 import com.zxhhyj.atorm.openai.api.chat.ChatCompletionRequest
 import com.zxhhyj.atorm.openai.api.chat.ChatMessage
@@ -13,6 +14,7 @@ import com.zxhhyj.atorm.openai.api.chat.FunctionTool
 import com.zxhhyj.atorm.openai.api.chat.JsonSchema
 import com.zxhhyj.atorm.openai.api.chat.Tool
 import com.zxhhyj.atorm.openai.api.chat.ToolCall
+import com.zxhhyj.atorm.openai.api.chat.ToolChoice
 import com.zxhhyj.atorm.openai.api.chat.ToolId
 import com.zxhhyj.atorm.openai.api.chat.ToolType
 import com.zxhhyj.atorm.openai.api.core.Parameters
@@ -25,6 +27,29 @@ public fun buildChatCompletionRequest(
 ): ChatCompletionRequest {
     return ChatCompletionRequest(
         model = ModelId(model.id),
+        temperature = prompt.params.temperature,
+        maxTokens = prompt.params.maxTokens,
+        n = prompt.params.numberOfChoices,
+        toolChoice = prompt.params.toolChoice?.let {
+            when (it) {
+                LLMParams.ToolChoice.Auto -> {
+                    ToolChoice.Auto
+                }
+
+                is LLMParams.ToolChoice.Named -> {
+                    ToolChoice.function(it.name)
+                }
+
+                LLMParams.ToolChoice.None -> {
+                    ToolChoice.None
+                }
+
+                LLMParams.ToolChoice.Required -> {
+                    ToolChoice.Required
+                }
+            }
+        },
+        user = prompt.params.user,
         messages = prompt.messages.map {
             when (it) {
                 is Message.System -> {

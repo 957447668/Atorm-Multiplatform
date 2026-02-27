@@ -50,14 +50,12 @@ public data class Prompt(
 
     public class LLMParamsUpdateContext internal constructor(
         public var temperature: Double?,
-        public var speculation: String?,
         public var schema: LLMParams.Schema?,
         public var toolChoice: LLMParams.ToolChoice?,
         public var user: String? = null,
     ) {
         internal constructor(params: LLMParams) : this(
             params.temperature,
-            params.speculation,
             params.schema,
             params.toolChoice,
             params.user,
@@ -65,7 +63,6 @@ public data class Prompt(
 
         public fun toParams(): LLMParams = LLMParams(
             temperature = temperature,
-            speculation = speculation,
             schema = schema,
             toolChoice = toolChoice,
             user = user
@@ -73,7 +70,6 @@ public data class Prompt(
 
         internal fun applyToParams(params: LLMParams): LLMParams = params.copy(
             temperature = temperature,
-            speculation = speculation,
             schema = schema,
             toolChoice = toolChoice,
             user = user,

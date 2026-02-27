@@ -9,7 +9,6 @@ public data class LLMParams(
     public val temperature: Double? = null,
     public val maxTokens: Int? = null,
     public val numberOfChoices: Int? = null,
-    public val speculation: String? = null,
     public val schema: Schema? = null,
     public val toolChoice: ToolChoice? = null,
     public val user: String? = null,
@@ -21,9 +20,6 @@ public data class LLMParams(
         }
         numberOfChoices?.let { choices ->
             require(choices > 0) { "Number of choices must be greater than 0, but was $choices" }
-        }
-        speculation?.let { spec ->
-            require(spec.isNotBlank()) { "Speculation must not be empty or blank" }
         }
         user?.let { userId ->
             require(userId.isNotBlank()) { "User must not be empty or blank" }
