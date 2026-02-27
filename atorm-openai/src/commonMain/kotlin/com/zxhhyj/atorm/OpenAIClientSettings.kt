@@ -4,6 +4,6 @@ import com.zxhhyj.atorm.openai.api.http.Timeout
 import kotlin.time.Duration.Companion.seconds
 
 public data class OpenAIClientSettings(
-    val baseUrl: String = "https://api.openai.com/v1/chat/completions",
+    val baseUrl: String = "https://api.openai.com/v1/",
     val timeout: Timeout = Timeout(socket = 60.seconds)
 )
