@@ -390,11 +390,6 @@ public data class ResponseMetaInfo(
     public val totalTokensCount: Int? = null,
     public val inputTokensCount: Int? = null,
     public val outputTokensCount: Int? = null,
-    @Deprecated(
-        "additionalInfo is deprecated, use metadata instead",
-        ReplaceWith("metadata")
-    )
-    public val additionalInfo: Map<String, String> = emptyMap(),
     override val metadata: JsonObject? = null,
 ) : MessageMetaInfo {
     /**
@@ -418,7 +413,6 @@ public data class ResponseMetaInfo(
             totalTokensCount: Int? = null,
             inputTokensCount: Int? = null,
             outputTokensCount: Int? = null,
-            additionalInfo: Map<String, String> = emptyMap(),
             metadata: JsonObject? = null,
         ): ResponseMetaInfo =
             ResponseMetaInfo(
@@ -426,7 +420,6 @@ public data class ResponseMetaInfo(
                 totalTokensCount,
                 inputTokensCount,
                 outputTokensCount,
-                additionalInfo,
                 metadata
             )
 

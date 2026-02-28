@@ -51,3 +51,5 @@ public fun Iterable<StreamFrame>.toToolCallMessages(): List<Message.Tool.Call> =
 
 public fun Iterable<StreamFrame>.toAssistantMessageOrNull(): Message.Assistant? =
     toMessageResponses().filterIsInstance<Message.Assistant>().singleOrNull()
+
+public fun Iterable<StreamFrame>.toAssistantMessage(): Message.Assistant = toAssistantMessageOrNull()!!

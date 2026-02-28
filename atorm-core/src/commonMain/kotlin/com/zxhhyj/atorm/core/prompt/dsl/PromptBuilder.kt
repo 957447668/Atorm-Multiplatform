@@ -22,7 +22,6 @@ import kotlin.time.Clock
  * }
  * ```
  *
- * @property id The identifier for the prompt
  * @property params The parameters for the language model
  * @property clock The clock used for timestamps of messages
  */
@@ -55,7 +54,7 @@ public class PromptBuilder internal constructor(
      * @param content The content of the system message
      */
     public fun system(content: String) {
-        messages.add(Message.System(content, RequestMetaInfo.Companion.create(clock)))
+        messages.add(Message.System(content, RequestMetaInfo.create(clock)))
     }
 
     /**
@@ -108,20 +107,6 @@ public class PromptBuilder internal constructor(
      * This method supports adding text content.
      *
      * @param content Content of the user message
-     * @param block Lambda to configure attachments using [ContentPartsBuilder]
-     */
-    @Deprecated("Use user(block: ContentPartsBuilder.() -> Unit instead.")
-    public fun user(content: String, block: ContentPartsBuilder.() -> Unit) {
-        user(content, ContentPartsBuilder().apply(block).build())
-    }
-
-    /**
-     * Adds a user message to the prompt with optional attachments.
-     *
-     * User messages represent input from the user to the language model.
-     * This method supports adding text content.
-     *
-     * @param content Content of the user message
      * @param attachments Attachments to be added to the message
      */
     @Deprecated("Use user(block: ContentPartsBuilder.() -> Unit instead.")
@@ -163,7 +148,13 @@ public class PromptBuilder internal constructor(
      * @param content The content of the assistant message
      */
     public fun assistant(content: String) {
-        messages.add(Message.Assistant(content, finishReason = null, metaInfo = ResponseMetaInfo.Companion.create(clock)))
+        messages.add(
+            Message.Assistant(
+                content,
+                finishReason = null,
+                metaInfo = ResponseMetaInfo.create(clock)
+            )
+        )
     }
 
     /**
@@ -249,7 +240,7 @@ public class PromptBuilder internal constructor(
          * @param content The content or payload of the tool call.
          */
         public fun call(id: String?, tool: String, content: String) {
-            call(Message.Tool.Call(id, tool, content, ResponseMetaInfo.Companion.create(clock)))
+            call(Message.Tool.Call(id, tool, content, ResponseMetaInfo.create(clock)))
         }
 
         /**
@@ -283,7 +274,7 @@ public class PromptBuilder internal constructor(
                         id = result.id,
                         tool = result.tool,
                         content = "Synthesized call for result",
-                        metaInfo = ResponseMetaInfo.Companion.create(clock)
+                        metaInfo = ResponseMetaInfo.create(clock)
                     )
                     this@PromptBuilder.messages.add(synthesizedCall)
                 }
@@ -303,7 +294,7 @@ public class PromptBuilder internal constructor(
          * @param content The content or payload of the tool result.
          */
         public fun result(id: String?, tool: String, content: String) {
-            result(Message.Tool.Result(id, tool, content, RequestMetaInfo.Companion.create(clock)))
+            result(Message.Tool.Result(id, tool, content, RequestMetaInfo.create(clock)))
         }
     }
 
