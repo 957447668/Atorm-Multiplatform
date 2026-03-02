@@ -50,53 +50,77 @@ public fun buildChatCompletionRequest(
             }
         },
         user = prompt.params.user,
-        messages = prompt.messages.map {
-            when (it) {
-                is Message.System -> {
-                    ChatMessage(
-                        role = ChatRole.System,
-                        content = it.content
-                    )
-                }
+        messages = buildList {
+            val deque = ArrayDeque(prompt.messages)
+            while (deque.isNotEmpty()) {
+                when (val current = deque.removeFirstOrNull() ?: break) {
+                    is Message.System -> {
+                        add(ChatMessage(role = ChatRole.System, content = current.content))
+                    }
 
-                is Message.User -> {
-                    ChatMessage(
-                        role = ChatRole.User,
-                        content = it.content
-                    )
-                }
+                    is Message.User -> {
+                        add(ChatMessage(role = ChatRole.User, content = current.content))
+                    }
 
-                is Message.Assistant -> {
-                    ChatMessage(
-                        role = ChatRole.Assistant,
-                        content = it.content
-                    )
-                }
+                    is Message.Assistant -> {
+                        when (deque.firstOrNull()) {
+                            is Message.Tool -> {
+                                val toolCalls = buildList {
+                                    while (deque.isNotEmpty()) {
+                                        when (deque.first()) {
+                                            is Message.Tool.Call -> {
+                                                val current = deque.removeFirst() as Message.Tool.Call
+                                                val next = deque.firstOrNull { it is Message.Tool.Result }?.let {
+                                                    deque.removeFirst()
+                                                } ?: error("Missing Tool.Result for Tool.Call id=${current.id}")
+                                                add(current to next)
+                                            }
 
-                is Message.Reasoning -> {
-                    TODO()
-                }
+                                            else -> {
+                                                break
+                                            }
+                                        }
+                                    }
+                                }
+                                add(
+                                    ChatMessage(
+                                        role = ChatRole.Assistant,
+                                        content = current.content,
+                                        toolCalls = toolCalls.map { it.first }.map {
+                                            ToolCall.Function(
+                                                id = ToolId(it.id!!),
+                                                function = FunctionCall(
+                                                    nameOrNull = it.tool,
+                                                    argumentsOrNull = it.content
+                                                )
+                                            )
+                                        }
+                                    ))
+                                addAll(toolCalls.map { (tool, result) ->
+                                    ChatMessage(
+                                        role = ChatRole.Tool,
+                                        toolCallId = ToolId(tool.id!!),
+                                        name = tool.tool,
+                                        content = result.content
+                                    )
+                                })
+                            }
 
-                is Message.Tool.Call -> {
-                    ChatMessage.Assistant(
-                        toolCalls = listOf(
-                            ToolCall.Function(
-                                id = ToolId(it.id!!),
-                                function = FunctionCall(
-                                    nameOrNull = it.tool,
-                                    argumentsOrNull = it.content
-                                )
-                            )
-                        )
-                    )
-                }
+                            null -> {
+                                add(ChatMessage(role = ChatRole.Assistant, content = current.content))
+                            }
 
-                is Message.Tool.Result -> {
-                    ChatMessage(
-                        role = ChatRole.Tool,
-                        toolCallId = ToolId(it.id!!),
-                        content = it.content
-                    )
+                            else -> continue
+                        }
+                    }
+
+                    is Message.Reasoning -> {
+                        throw NotImplementedError()
+                    }
+
+                    is Message.Tool.Call, is Message.Tool.Result -> {
+                        error("Unexpected standalone Tool message: $current")
+                    }
                 }
             }
         },

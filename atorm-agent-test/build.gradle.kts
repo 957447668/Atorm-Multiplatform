@@ -27,8 +27,9 @@ kotlin {
         commonMain.dependencies {
             implementation(projects.atormCore)
             implementation(projects.atormAgent)
-            implementation(projects.atormDoubao)
             implementation(projects.atormOpenai)
+            implementation(projects.atormDoubao)
+            implementation(projects.atormAlibaba)
 
             implementation(libs.kotlinx.coroutines.core)
             implementation(libs.kotlinx.serialization.json)

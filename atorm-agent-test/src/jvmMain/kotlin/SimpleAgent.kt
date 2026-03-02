@@ -1,10 +1,14 @@
 import com.zxhhyj.atorm.DoubaoLLMClient
 import com.zxhhyj.atorm.core.llm.LLModel
 import com.zxhhyj.atorm.core.prompt.dsl.prompt
-import com.zxhhyj.atorm.core.prompt.message.Message
 import com.zxhhyj.atorm.core.prompt.params.LLMParams
 import com.zxhhyj.atorm.core.prompt.streaming.StreamFrame
+import com.zxhhyj.atorm.core.prompt.streaming.toAssistantMessageOrNull
+import kotlinx.coroutines.flow.filterIsInstance
 import kotlinx.coroutines.flow.onCompletion
+import kotlinx.coroutines.flow.onEach
+import kotlinx.coroutines.flow.takeWhile
+import kotlinx.coroutines.flow.toList
 import kotlinx.coroutines.runBlocking
 import kotlinx.serialization.json.buildJsonObject
 import kotlinx.serialization.json.put
@@ -73,42 +77,87 @@ public fun main() {
         """.trimIndent()
 
     runBlocking {
+
+        val tools = listOf(
+            CarControlTool,
+            NavigateTool,
+            SearchMusicTool,
+            SearchVideoTool,
+            SearchWebTool,
+            StoryTool,
+            WeatherTool
+        )
+
         println("running...")
-        val history = mutableListOf<Message>()
+
+        var historyPrompt = prompt(params = LLMParams(additionalProperties = mapOf("thinking" to buildJsonObject {
+            put("type", "disabled")
+        }))) {
+            system(systemPrompt)
+        }
+
         while (true) {
             val input = readln()
-            val tools = listOf(
-                CarControlTool,
-                NavigateTool,
-                SearchMusicTool,
-                SearchVideoTool,
-                SearchWebTool,
-                StoryTool,
-                WeatherTool
-            )
 
-            llmClient.executeStreaming(
-                prompt = prompt(params = LLMParams(additionalProperties = mapOf("thinking" to buildJsonObject {
-                    put("type", "disabled")
-                }))) {
-                    system(systemPrompt)
+            val appendFrames = llmClient.executeStreaming(
+                prompt = prompt(historyPrompt) {
                     user(input)
+                }.apply {
+                    historyPrompt = this
                 },
                 model = model,
                 tools = tools.map { it.descriptor }
             ).onCompletion {
                 println()
-            }.collect {
-                when (it) {
-                    is StreamFrame.Append -> {
-                        print(it.text)
-                    }
+            }.run {
+                val appendText = StringBuilder()
+                onEach {
+                    when (it) {
+                        is StreamFrame.Append -> {
+                            appendText.append(it.text)
+                            print(it.text)
+                        }
 
-                    is StreamFrame.ToolCall -> {
-                        println("ToolCall: ${it.name}")
-                    }
+                        is StreamFrame.ToolCall -> {
+                            println("ToolCall: ${it.name}")
+                            val result = tools.first { tool -> it.name == tool.name }.let { tool ->
+                                val args = tool.decodeArgs(it.contentJson)
+                                tool.executeUnsafe(args)
+                            }
+                            val appendFrames = llmClient.executeStreaming(
+                                prompt = prompt(historyPrompt) {
+                                    assistant(appendText.toString())
+                                    tool {
+                                        call(id = it.id, tool = it.name, content = it.content)
+                                        result(
+                                            id = it.id,
+                                            tool = it.name,
+                                            content = result
+                                        )
+                                    }
+                                }.apply {
+                                    historyPrompt = this
+                                },
+                                model = model,
+                                tools = tools.map { it.descriptor }
+                            ).filterIsInstance<StreamFrame.Append>().onEach {
+                                print(it.text)
+                            }.toList()
 
-                    is StreamFrame.End -> {}
+                            assert(appendFrames.isEmpty())
+                        }
+
+                        is StreamFrame.End -> {}
+                    }
+                }
+            }.takeWhile {
+                it !is StreamFrame.ToolCall
+            }.filterIsInstance<StreamFrame>().toList()
+
+            val messageAssistant = appendFrames.toAssistantMessageOrNull()
+            if (messageAssistant != null) {
+                historyPrompt = prompt(historyPrompt) {
+                    assistant(messageAssistant.content)
                 }
             }
         }
