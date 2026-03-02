@@ -12,6 +12,7 @@ import com.zxhhyj.atorm.openai.api.chat.ChatRole
 import com.zxhhyj.atorm.openai.api.chat.FunctionCall
 import com.zxhhyj.atorm.openai.api.chat.FunctionTool
 import com.zxhhyj.atorm.openai.api.chat.JsonSchema
+import com.zxhhyj.atorm.openai.api.chat.TextContent
 import com.zxhhyj.atorm.openai.api.chat.Tool
 import com.zxhhyj.atorm.openai.api.chat.ToolCall
 import com.zxhhyj.atorm.openai.api.chat.ToolChoice
@@ -55,11 +56,11 @@ public fun buildChatCompletionRequest(
             while (deque.isNotEmpty()) {
                 when (val current = deque.removeFirstOrNull() ?: break) {
                     is Message.System -> {
-                        add(ChatMessage(role = ChatRole.System, content = current.content))
+                        add(ChatMessage(role = ChatRole.System, messageContent = TextContent(current.content)))
                     }
 
                     is Message.User -> {
-                        add(ChatMessage(role = ChatRole.User, content = current.content))
+                        add(ChatMessage(role = ChatRole.User, messageContent = TextContent(current.content)))
                     }
 
                     is Message.Assistant -> {
@@ -85,7 +86,7 @@ public fun buildChatCompletionRequest(
                                 add(
                                     ChatMessage(
                                         role = ChatRole.Assistant,
-                                        content = current.content,
+                                        messageContent = TextContent(current.content),
                                         toolCalls = toolCalls.map { it.first }.map {
                                             ToolCall.Function(
                                                 id = ToolId(it.id!!),
@@ -101,13 +102,18 @@ public fun buildChatCompletionRequest(
                                         role = ChatRole.Tool,
                                         toolCallId = ToolId(tool.id!!),
                                         name = tool.tool,
-                                        content = result.content
+                                        messageContent = TextContent(result.content)
                                     )
                                 })
                             }
 
                             null -> {
-                                add(ChatMessage(role = ChatRole.Assistant, content = current.content))
+                                add(
+                                    ChatMessage(
+                                        role = ChatRole.Assistant,
+                                        messageContent = TextContent(current.content)
+                                    )
+                                )
                             }
 
                             else -> continue

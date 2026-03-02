@@ -2,6 +2,7 @@ package com.zxhhyj.atorm.openai.api.chat
 
 import com.zxhhyj.atorm.openai.api.OpenAIDsl
 import com.zxhhyj.atorm.openai.api.chat.internal.ContentSerializer
+import kotlinx.serialization.ExperimentalSerializationApi
 import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
 import kotlinx.serialization.json.JsonClassDiscriminator
@@ -67,55 +68,6 @@ public data class ChatMessage(
      */
     @SerialName("reasoning_content") public val reasoningContent: String? = null,
 ) {
-
-    public constructor(
-        role: ChatRole,
-        content: String? = null,
-        name: String? = null,
-        functionCall: FunctionCall? = null,
-        toolCalls: List<ToolCall>? = null,
-        toolCallId: ToolId? = null,
-        contentFilterResults: List<ContentFilterResults>? = null,
-        contentFilterOffsets: List<ContentFilterOffsets>? = null,
-        annotations: List<ChatAnnotation>? = null,
-        reasoningContent: String? = null,
-    ) : this(
-        role = role,
-        messageContent = content?.let { TextContent(it) },
-        name = name,
-        functionCall = functionCall,
-        toolCalls = toolCalls,
-        toolCallId = toolCallId,
-        contentFilterOffsets = contentFilterOffsets,
-        contentFilterResults = contentFilterResults,
-        annotations = annotations,
-        reasoningContent = reasoningContent,
-    )
-
-    public constructor(
-        role: ChatRole,
-        content: List<ContentPart>? = null,
-        name: String? = null,
-        functionCall: FunctionCall? = null,
-        toolCalls: List<ToolCall>? = null,
-        toolCallId: ToolId? = null,
-        contentFilterResults: List<ContentFilterResults>? = null,
-        contentFilterOffsets: List<ContentFilterOffsets>? = null,
-        annotations: List<ChatAnnotation>? = null,
-        reasoningContent: String? = null,
-    ) : this(
-        role = role,
-        messageContent = content?.let { ListContent(it) },
-        name = name,
-        functionCall = functionCall,
-        toolCalls = toolCalls,
-        toolCallId = toolCallId,
-        contentFilterOffsets = contentFilterOffsets,
-        contentFilterResults = contentFilterResults,
-        annotations = annotations,
-        reasoningContent = reasoningContent,
-    )
-
     val content: String?
         get() = when (messageContent) {
             is TextContent? -> messageContent?.content
@@ -230,6 +182,7 @@ public value class ListContent(public val content: List<ContentPart>) : Content
 /**
  * Represents a chat message part.
  */
+@OptIn(ExperimentalSerializationApi::class)
 @JsonClassDiscriminator("type")
 @Serializable
 public sealed interface ContentPart
