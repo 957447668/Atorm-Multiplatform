@@ -12,6 +12,7 @@ public abstract class Tool<TArgs, TResult>(
     public val argsSerializer: KSerializer<TArgs>,
     public val resultSerializer: KSerializer<TResult>,
     public val descriptor: ToolDescriptor,
+    public val metadata: Map<String, String> = emptyMap(),
 ) {
     public companion object {
         private val ToolJson: Json = Json {
