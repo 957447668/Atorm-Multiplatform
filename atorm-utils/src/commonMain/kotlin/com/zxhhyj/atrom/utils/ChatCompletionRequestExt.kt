@@ -56,11 +56,21 @@ public fun buildChatCompletionRequest(
             while (deque.isNotEmpty()) {
                 when (val current = deque.removeFirstOrNull() ?: break) {
                     is Message.System -> {
-                        add(ChatMessage(role = ChatRole.System, messageContent = TextContent(current.content)))
+                        add(
+                            ChatMessage(
+                                role = ChatRole.System,
+                                messageContent = TextContent(current.content)
+                            )
+                        )
                     }
 
                     is Message.User -> {
-                        add(ChatMessage(role = ChatRole.User, messageContent = TextContent(current.content)))
+                        add(
+                            ChatMessage(
+                                role = ChatRole.User,
+                                messageContent = TextContent(current.content)
+                            )
+                        )
                     }
 
                     is Message.Assistant -> {
@@ -70,10 +80,14 @@ public fun buildChatCompletionRequest(
                                     while (deque.isNotEmpty()) {
                                         when (deque.first()) {
                                             is Message.Tool.Call -> {
-                                                val current = deque.removeFirst() as Message.Tool.Call
-                                                val next = deque.firstOrNull { it is Message.Tool.Result }?.let {
-                                                    deque.removeFirst()
-                                                } ?: error("Missing Tool.Result for Tool.Call id=${current.id}")
+                                                val current =
+                                                    deque.removeFirst() as Message.Tool.Call
+                                                val next =
+                                                    deque.firstOrNull { it is Message.Tool.Result }
+                                                        ?.let {
+                                                            deque.removeFirst()
+                                                        }
+                                                        ?: error("Missing Tool.Result for Tool.Call id=${current.id}")
                                                 add(current to next)
                                             }
 
@@ -107,7 +121,7 @@ public fun buildChatCompletionRequest(
                                 })
                             }
 
-                            null -> {
+                            else -> {
                                 add(
                                     ChatMessage(
                                         role = ChatRole.Assistant,
@@ -115,8 +129,6 @@ public fun buildChatCompletionRequest(
                                     )
                                 )
                             }
-
-                            else -> continue
                         }
                     }
 
