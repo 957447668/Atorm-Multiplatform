@@ -1,13 +1,9 @@
 plugins {
     alias(libs.plugins.kotlinMultiplatform)
-    alias(libs.plugins.kotlinSerialization)
     alias(libs.plugins.androidLibrary)
-    alias(libs.plugins.mavenPublish)
 }
 
 kotlin {
-    explicitApi()
-
     androidTarget()
 
     jvm()
@@ -25,14 +21,26 @@ kotlin {
     }
 
     sourceSets {
-        commonMain.dependencies {
+        commonTest.dependencies {
             implementation(projects.atormCore)
             implementation(projects.atormAgent)
+            implementation(projects.atormMcp)
 
             implementation(libs.mcp.kotlin.sdk)
 
+            implementation(libs.kotlin.test)
             implementation(libs.ktor.client.core)
+            implementation(libs.kotlinx.coroutines.core)
             implementation(libs.kotlinx.serialization.json)
+        }
+        jvmMain.dependencies {
+            implementation(libs.ktor.client.okhttp)
+        }
+        androidMain.dependencies {
+            implementation(libs.ktor.client.okhttp)
+        }
+        nativeMain.dependencies {
+            implementation(libs.ktor.client.cio)
         }
     }
 }
@@ -46,38 +54,5 @@ android {
     }
     defaultConfig {
         minSdk = libs.versions.android.minSdk.get().toInt()
-    }
-}
-
-mavenPublishing {
-    publishToMavenCentral()
-    signAllPublications()
-
-    coordinates(group.toString(), "atorm-mcp", version.toString())
-
-    pom {
-        name = "atorm-mcp"
-        description = "atorm-mcp"
-        inceptionYear = "2026"
-        url = "https://gitee.com/ZXHHYJ/atorm"
-        licenses {
-            license {
-                name = "The Apache License, Version 2.0"
-                url = "https://www.apache.org/licenses/LICENSE-2.0.txt"
-                distribution = "https://www.apache.org/licenses/LICENSE-2.0.txt"
-            }
-        }
-        developers {
-            developer {
-                id = "ZXHHYJ"
-                name = "ZXHHYJ"
-                url = "https://gitee.com/ZXHHYJ"
-            }
-        }
-        scm {
-            url = "https://gitee.com/ZXHHYJ/atorm"
-            connection = "scm:git:git://gitee.com:ZXHHYJ/atorm.git"
-            developerConnection = "scm:git:ssh://git@gitee.com:ZXHHYJ/atorm.git"
-        }
     }
 }
