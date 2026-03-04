@@ -1,5 +1,4 @@
 import org.jetbrains.compose.desktop.application.dsl.TargetFormat
-import org.jetbrains.kotlin.gradle.ExperimentalWasmDsl
 
 plugins {
     alias(libs.plugins.kotlinMultiplatform)
@@ -13,13 +12,18 @@ kotlin {
     androidTarget()
 
     jvm()
-    
+
     sourceSets {
         androidMain.dependencies {
             implementation(libs.ui.tooling.preview)
             implementation(libs.androidx.activity.compose)
         }
         commonMain.dependencies {
+            implementation(libs.kotlinx.coroutines.core)
+            implementation("com.alibaba:dashscope-sdk-java:2.22.10")
+
+            implementation(libs.kotlinx.io.core)
+
             implementation(libs.runtime)
             implementation(libs.foundation)
             implementation(libs.material3)
