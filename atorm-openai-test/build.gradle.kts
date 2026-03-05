@@ -23,6 +23,7 @@ kotlin {
     sourceSets {
         commonTest.dependencies {
             implementation(projects.atormOpenai)
+            implementation(projects.atormTest)
 
             implementation(libs.kotlin.test)
             implementation(libs.kotlinx.coroutines.core)

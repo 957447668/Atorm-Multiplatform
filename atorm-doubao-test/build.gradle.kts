@@ -24,8 +24,8 @@ kotlin {
     sourceSets {
         commonTest.dependencies {
             implementation(projects.atormCore)
-            implementation(projects.atormCoreTest)
             implementation(projects.atormDoubao)
+            implementation(projects.atormTest)
 
             implementation(libs.kotlin.test)
             implementation(libs.kotlinx.coroutines.core)

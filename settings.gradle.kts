@@ -31,7 +31,7 @@ dependencyResolutionManagement {
 include(":compose-example-xiaojing")
 include(":openai-client")
 include(":atorm-core")
-include(":atorm-core-test")
+include(":atorm-test")
 include(":atorm-agent")
 include(":atorm-agent-test")
 include(":atorm-mcp")

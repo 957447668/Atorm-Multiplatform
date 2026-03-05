@@ -1,5 +1,6 @@
 plugins {
     alias(libs.plugins.kotlinMultiplatform)
+    alias(libs.plugins.kotlinSerialization)
     alias(libs.plugins.androidLibrary)
 }
 
@@ -23,6 +24,12 @@ kotlin {
     sourceSets {
         commonMain.dependencies {
             implementation(projects.atormCore)
+            implementation(projects.atormAgent)
+
+            implementation(libs.kotlin.test)
+
+            implementation(libs.kotlinx.coroutines.core)
+            implementation(libs.kotlinx.serialization.json)
         }
     }
 }

@@ -1,11 +1,18 @@
 package com.zxhhyj.atorm.recorder
 
+import kotlinx.coroutines.flow.Flow
 import kotlinx.io.Source
 
-interface Recorder {
-    val isAvailable: Boolean
+interface Recorder : Flow<Source> {
+    val sampleRate: Int
 
-    suspend fun <T> buffer(length: Int, block: (Source) -> T): T
+    val sampleSizeInBits: Int
+
+    val channels: Int
+
+    val bufferSize: Int
+
+    val isAvailable: Boolean
 
     fun startRecording()
 

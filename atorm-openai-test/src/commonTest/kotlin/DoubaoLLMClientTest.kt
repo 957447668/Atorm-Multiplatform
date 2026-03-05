@@ -1,13 +1,13 @@
-import com.zxhhyj.atorm.DoubaoLLMClient
+import com.zxhhyj.atorm.OpenAILLMClient
 import com.zxhhyj.atorm.clients.LLMClient
 import com.zxhhyj.atorm.core.llm.LLModel
 import com.zxhhyj.storm.templates.LLMClientTest
 import kotlin.test.Test
 
-class DoubaoLLMClientTest : LLMClientTest() {
-    override val llmClient: LLMClient = DoubaoLLMClient(TODO("需要API KEY"))
+class OpenAILLMClientTest : LLMClientTest() {
+    override val llmClient: LLMClient = OpenAILLMClient(TODO("需要API KEY"))
 
-    override val model: LLModel = LLModel("doubao-seed-1-6-flash-250828", Long.MAX_VALUE)
+    override val model: LLModel = LLModel("chatgpt-4o", Long.MAX_VALUE)
 
     @Test
     override fun chatTest() {

@@ -8,14 +8,9 @@ import com.alibaba.dashscope.audio.asr.translation.TranslationRecognizerParam
 import com.alibaba.dashscope.audio.asr.translation.TranslationRecognizerRealtime
 import com.alibaba.dashscope.audio.asr.translation.results.TranslationRecognizerResult
 import com.alibaba.dashscope.common.ResultCallback
-import kotlinx.coroutines.Dispatchers
+import com.zxhhyj.atorm.recorder.PlatformRecorder
 import kotlinx.coroutines.delay
-import kotlinx.coroutines.isActive
-import kotlinx.coroutines.withContext
-import kotlinx.io.Buffer
 import java.nio.ByteBuffer
-import javax.sound.sampled.AudioFormat
-import javax.sound.sampled.AudioSystem
 
 
 @Composable
@@ -28,7 +23,7 @@ fun App() {
 
             val recognizerParam =
                 TranslationRecognizerParam.builder() // 若没有将API Key配置到环境变量中，需将your-api-key替换为自己的API Key
-                    .apiKey()
+                    .apiKey("")
                     .model("gummy-realtime-v1") // 设置模型名
                     .format("pcm") // 设置待识别音频格式，支持的音频格式：pcm、wav、mp3、opus、speex、aac、amr
                     .sampleRate(16000) // 设置待识别音频采样率（单位Hz）。支持16000Hz及以上采样率。
@@ -63,32 +58,25 @@ fun App() {
 
             translator.call(recognizerParam, callback)
 
-            val audioFormat = AudioFormat(16000f, 16, 1, true, false)
+            val frameTime = 20
+            val sampleRate = 16000
+            val bufferSize = sampleRate / frameTime
 
-            // 根据格式匹配默认录音设备
-            val targetDataLine =
-                AudioSystem.getTargetDataLine(audioFormat)
-            targetDataLine.open(audioFormat)
+            val platformRecorder = PlatformRecorder(sampleRate, 16, 1, bufferSize)
 
-            // 开始录音
-            targetDataLine.start()
-            println("请您通过麦克风讲话体验实时语音识别和翻译功能")
-            val a = Buffer()
             val buffer = ByteBuffer.allocate(1024)
 
-            withContext(Dispatchers.IO) {
-                while (isActive) {
-                    val read = targetDataLine.read(buffer.array(), 0, buffer.capacity())
-                    if (read > 0) {
-                        buffer.limit(read)
-                        translator.sendAudioFrame(buffer)
-                        buffer.clear()
-                        delay(20)
-                    }
+            try {
+                println("请您通过麦克风讲话体验实时语音识别和翻译功能")
+                platformRecorder.collect {
+//                    buffer.limit(read)
+                    translator.sendAudioFrame(buffer)
+                    buffer.clear()
+                    delay(20)
                 }
+            } finally {
+                translator.stop()
             }
-
-            translator.stop()
         }
     }
 }
