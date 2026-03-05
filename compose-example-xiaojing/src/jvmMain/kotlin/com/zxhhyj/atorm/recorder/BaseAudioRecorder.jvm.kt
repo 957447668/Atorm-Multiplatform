@@ -1,11 +1,9 @@
 package com.zxhhyj.atorm.recorder
 
-import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.Job
-import kotlinx.coroutines.cancel
-import kotlinx.coroutines.cancelChildren
-import kotlinx.coroutines.launch
+import kotlinx.coroutines.*
+import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.filter
+import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.sync.Mutex
 import kotlinx.coroutines.sync.withLock
 import kotlinx.io.Buffer
@@ -24,11 +22,14 @@ abstract class BaseAudioRecorder : AutoCloseable, Recorder {
     override val isAvailable: Boolean
         get() = _isAvailable
 
-    private val _buffer = Buffer()
-
     private val mutex = Mutex()
 
-    override suspend fun <T> buffer(block: (Source) -> T): T {
+    private val lengthFlow = MutableStateFlow(0)
+
+    private val _buffer = Buffer()
+
+    override suspend fun <T> buffer(length: Int, block: (Source) -> T): T {
+        lengthFlow.filter { it >= length }.first()
         return mutex.withLock {
             block(_buffer)
         }
@@ -56,6 +57,7 @@ abstract class BaseAudioRecorder : AutoCloseable, Recorder {
                         mutex.withLock {
                             _buffer.write(buffer, 0, bytesRead)
                         }
+                        lengthFlow.value += bytesRead
                     }
                 }
             } catch (e: IOException) {

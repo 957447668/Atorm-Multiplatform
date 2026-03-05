@@ -8,7 +8,7 @@ import javax.sound.sampled.TargetDataLine
 class WindowsAudioRecorder : BaseAudioRecorder() {
     override fun initializeLineAndFormat(): Boolean =
         try {
-            val format = AudioFormat(44100f, 16, 1, true, false)
+            val format = AudioFormat(16000f, 16, 1, true, false)
             val info = DataLine.Info(TargetDataLine::class.java, format)
             val line = AudioSystem.getLine(info) as TargetDataLine
             this.line = line
