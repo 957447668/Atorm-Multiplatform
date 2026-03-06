@@ -9,7 +9,7 @@ import com.alibaba.dashscope.audio.asr.translation.TranslationRecognizerRealtime
 import com.alibaba.dashscope.audio.asr.translation.results.TranslationRecognizerResult
 import com.alibaba.dashscope.common.ResultCallback
 import com.zxhhyj.atorm.recorder.PlatformRecorder
-import kotlinx.coroutines.delay
+import kotlinx.io.readTo
 import java.nio.ByteBuffer
 
 
@@ -63,16 +63,14 @@ fun App() {
             val bufferSize = sampleRate / frameTime
 
             val platformRecorder = PlatformRecorder(sampleRate, 16, 1, bufferSize)
-
-            val buffer = ByteBuffer.allocate(1024)
-
+            platformRecorder.startRecording()
+            val buffer = ByteBuffer.allocate(bufferSize)
             try {
                 println("请您通过麦克风讲话体验实时语音识别和翻译功能")
                 platformRecorder.collect {
-//                    buffer.limit(read)
+                    it.readTo(buffer.array())
                     translator.sendAudioFrame(buffer)
                     buffer.clear()
-                    delay(20)
                 }
             } finally {
                 translator.stop()

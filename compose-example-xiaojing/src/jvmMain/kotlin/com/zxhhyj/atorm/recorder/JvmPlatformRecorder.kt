@@ -1,15 +1,8 @@
 package com.zxhhyj.atorm.recorder
 
-import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.Job
-import kotlinx.coroutines.cancel
-import kotlinx.coroutines.cancelChildren
+import kotlinx.coroutines.*
 import kotlinx.coroutines.flow.FlowCollector
 import kotlinx.coroutines.flow.MutableSharedFlow
-import kotlinx.coroutines.isActive
-import kotlinx.coroutines.launch
-import kotlinx.coroutines.withContext
 import kotlinx.io.Buffer
 import kotlinx.io.Source
 import javax.sound.sampled.AudioFormat
@@ -40,18 +33,23 @@ class JvmPlatformRecorder(
 
     override fun startRecording() {
         coroutineScope.launch(recordJob) {
-            val bytes = ByteArray(bufferSize)
-            val buffer = Buffer()
-            while (isActive) {
-                val read = withContext(Dispatchers.IO) {
-                    audioLine.read(bytes, 0, bytes.size)
+            try {
+                audioLine.open(audioFormat, bufferSize)
+                audioLine.start()
+
+                val bytes = ByteArray(bufferSize)
+                while (isActive) {
+                    val readLength = withContext(Dispatchers.IO) {
+                        audioLine.read(bytes, 0, bytes.size)
+                    }
+                    if (readLength > 0) {
+                        val buffer = Buffer()
+                        buffer.write(bytes, 0, readLength)
+                        bufferFlow.emit(buffer)
+                    }
                 }
-                if (read > 0) {
-                    bufferFlow.emit(buffer.apply {
-                        write(bytes)
-                    })
-                    buffer.clear()
-                }
+            } finally {
+                audioLine.stop()
             }
         }
     }
