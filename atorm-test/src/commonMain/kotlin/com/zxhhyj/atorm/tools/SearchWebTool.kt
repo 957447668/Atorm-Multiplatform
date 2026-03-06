@@ -1,21 +1,21 @@
-package com.zxhhyj.storm.tools
+package com.zxhhyj.atorm.tools
 
 import com.zxhhyj.atorm.agent.tool.Tool
 import com.zxhhyj.atorm.clients.LLMDescription
 import kotlinx.serialization.Serializable
 import kotlinx.serialization.builtins.serializer
 
-object SearchMusicTool : Tool<SearchMusicTool.Args, String>(
+object SearchWebTool : Tool<SearchWebTool.Args, String>(
     argsSerializer = Args.serializer(),
     resultSerializer = String.serializer(),
-    name = "SearchMusicTool",
-    description = "音乐搜索工具"
+    name = "SearchWebTool",
+    description = "网络搜索工具"
 ) {
 
     @Serializable
-    data class Args(@property:LLMDescription("音乐关键词") val query: String)
+    data class Args(@property:LLMDescription("搜索关键词") val query: String)
 
     override suspend fun execute(args: Args): String {
-        return "找到如下歌曲: 采茶纪、终身误、行香子、单向箭头、月出、太初"
+        return "已搜索网络: ${args.query}"
     }
 }

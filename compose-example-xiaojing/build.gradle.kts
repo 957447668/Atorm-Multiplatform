@@ -15,18 +15,21 @@ kotlin {
 
     sourceSets {
         androidMain.dependencies {
+            implementation(libs.accompanist.permissions)
             implementation(libs.ui.tooling.preview)
             implementation(libs.androidx.activity.compose)
         }
         commonMain.dependencies {
             implementation(libs.kotlinx.coroutines.core)
-            implementation("com.alibaba:dashscope-sdk-java:2.22.10")
+            implementation(libs.dashscope.sdk.java)
 
             implementation(libs.kotlinx.io.core)
 
             implementation(libs.runtime)
             implementation(libs.foundation)
-            implementation(libs.material3)
+            implementation(libs.backdrop)
+
+            implementation(libs.material)
             implementation(libs.ui)
             implementation(libs.components.resources)
             implementation(libs.ui.tooling.preview)
@@ -48,7 +51,7 @@ android {
     compileSdk = libs.versions.android.compileSdk.get().toInt()
 
     defaultConfig {
-        applicationId = "com.zxhhyj.storm"
+        applicationId = "com.zxhhyj.atorm"
         minSdk = libs.versions.android.minSdk.get().toInt()
         targetSdk = libs.versions.android.targetSdk.get().toInt()
         versionCode = 1
@@ -76,11 +79,11 @@ dependencies {
 
 compose.desktop {
     application {
-        mainClass = "com.zxhhyj.storm.MainKt"
+        mainClass = "com.zxhhyj.atorm.MainKt"
 
         nativeDistributions {
             targetFormats(TargetFormat.Dmg, TargetFormat.Msi, TargetFormat.Deb)
-            packageName = "com.zxhhyj.storm"
+            packageName = "com.zxhhyj.atorm"
             packageVersion = "1.0.0"
         }
     }

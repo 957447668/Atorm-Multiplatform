@@ -1,4 +1,4 @@
-package com.zxhhyj.storm.schemas
+package com.zxhhyj.atorm.schemas
 
 import com.zxhhyj.atorm.clients.LLMDescription
 import kotlinx.serialization.SerialName

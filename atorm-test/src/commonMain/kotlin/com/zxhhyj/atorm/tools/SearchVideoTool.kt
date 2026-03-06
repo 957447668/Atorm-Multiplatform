@@ -1,21 +1,21 @@
-package com.zxhhyj.storm.tools
+package com.zxhhyj.atorm.tools
 
 import com.zxhhyj.atorm.agent.tool.Tool
 import com.zxhhyj.atorm.clients.LLMDescription
 import kotlinx.serialization.Serializable
 import kotlinx.serialization.builtins.serializer
 
-object WeatherTool : Tool<WeatherTool.Args, String>(
+object SearchVideoTool : Tool<SearchVideoTool.Args, String>(
     argsSerializer = Args.serializer(),
     resultSerializer = String.serializer(),
-    name = "WeatherTool",
-    description = "天气查询工具"
+    name = "SearchViddeoTool",
+    description = "视频搜索工具"
 ) {
 
     @Serializable
-    public data class Args(@property:LLMDescription("城市名称") val city: String)
+    data class Args(@property:LLMDescription("视频关键词") val query: String)
 
     override suspend fun execute(args: Args): String {
-        return "已查询天气: ${args.city}"
+        return "已搜索视频: ${args.query}"
     }
 }

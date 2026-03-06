@@ -1,4 +1,4 @@
-package com.zxhhyj.storm.templates
+package com.zxhhyj.atorm.templates
 
 import com.zxhhyj.atorm.clients.LLMClient
 import com.zxhhyj.atorm.clients.executeStructured
@@ -6,9 +6,9 @@ import com.zxhhyj.atorm.core.llm.LLModel
 import com.zxhhyj.atorm.core.prompt.dsl.prompt
 import com.zxhhyj.atorm.core.prompt.params.LLMParams
 import com.zxhhyj.atorm.core.prompt.streaming.StreamFrame
-import com.zxhhyj.storm.schemas.StorySchema
-import com.zxhhyj.storm.tools.SearchMusicTool
-import com.zxhhyj.storm.tools.SearchVideoTool
+import com.zxhhyj.atorm.schemas.StorySchema
+import com.zxhhyj.atorm.tools.SearchMusicTool
+import com.zxhhyj.atorm.tools.SearchVideoTool
 import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.flow.filterIsInstance
 import kotlinx.coroutines.flow.toList

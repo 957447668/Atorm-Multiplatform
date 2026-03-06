@@ -1,7 +1,7 @@
 import com.zxhhyj.atorm.OpenAILLMClient
 import com.zxhhyj.atorm.clients.LLMClient
 import com.zxhhyj.atorm.core.llm.LLModel
-import com.zxhhyj.storm.templates.LLMClientTest
+import com.zxhhyj.atorm.templates.LLMClientTest
 import kotlin.test.Test
 
 class OpenAILLMClientTest : LLMClientTest() {
