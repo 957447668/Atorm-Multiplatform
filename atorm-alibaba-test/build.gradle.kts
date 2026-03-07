@@ -1,11 +1,20 @@
+import org.jetbrains.kotlin.gradle.dsl.JvmTarget
+
 plugins {
-    alias(libs.plugins.kotlinMultiplatform)
-    alias(libs.plugins.kotlinSerialization)
-    alias(libs.plugins.androidLibrary)
+    alias(libs.plugins.kotlin.multiplatform)
+    alias(libs.plugins.kotlin.serialization)
+    alias(libs.plugins.android.kotlin.multiplatform.library)
 }
 
 kotlin {
-    androidTarget()
+    android {
+        namespace = "com.zxhhyj.atorm"
+        minSdk = libs.versions.android.minSdk.get().toInt()
+        compileSdk { version = release(libs.versions.android.compileSdk.get().toInt()) }
+        compilerOptions {
+            jvmTarget = JvmTarget.JVM_1_8
+        }
+    }
 
     jvm()
 
@@ -36,17 +45,5 @@ kotlin {
         jvmTest.dependencies {
             implementation(libs.ktor.client.okhttp)
         }
-    }
-}
-
-android {
-    namespace = "com.zxhhyj.atorm"
-    compileSdk = libs.versions.android.compileSdk.get().toInt()
-    compileOptions {
-        sourceCompatibility = JavaVersion.VERSION_11
-        targetCompatibility = JavaVersion.VERSION_11
-    }
-    defaultConfig {
-        minSdk = libs.versions.android.minSdk.get().toInt()
     }
 }

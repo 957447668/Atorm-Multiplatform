@@ -15,7 +15,7 @@ pluginManagement {
         }
 }
 plugins {
-    id("org.gradle.toolchains.foojay-resolver-convention") version "0.10.0"
+    id("org.gradle.toolchains.foojay-resolver-convention") version "1.0.0"
 }
 
 dependencyResolutionManagement {
@@ -31,7 +31,6 @@ dependencyResolutionManagement {
     }
 }
 
-include(":compose-example-xiaojing")
 include(":openai-client")
 include(":atorm-core")
 include(":atorm-test")
@@ -46,3 +45,5 @@ include(":atorm-doubao")
 include(":atorm-doubao-test")
 include(":atorm-alibaba")
 include(":atorm-alibaba-test")
+include(":example-livekit")
+include(":example-livekit-android")
