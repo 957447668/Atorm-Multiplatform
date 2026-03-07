@@ -18,5 +18,5 @@ interface Recorder : Flow<Source> {
 
     fun stopRecording()
 
-    fun close()
+    fun release()
 }

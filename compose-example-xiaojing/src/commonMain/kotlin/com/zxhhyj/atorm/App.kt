@@ -37,11 +37,6 @@ import com.kyant.backdrop.effects.blur
 import com.kyant.backdrop.effects.lens
 import com.kyant.backdrop.effects.vibrancy
 
-private sealed interface AsrResult {
-    class TempResult(val text: String) : AsrResult
-    class Fix(val text: String) : AsrResult
-}
-
 @Composable
 @Preview
 fun App() {

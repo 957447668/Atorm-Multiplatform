@@ -58,7 +58,7 @@ class JvmPlatformRecorder(
         recordJob.cancelChildren()
     }
 
-    override fun close() {
+    override fun release() {
         coroutineScope.cancel()
         audioLine.close()
     }

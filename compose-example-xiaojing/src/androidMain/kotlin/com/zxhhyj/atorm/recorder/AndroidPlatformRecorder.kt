@@ -86,7 +86,7 @@ class AndroidPlatformRecorder(
         recordJob.cancelChildren()
     }
 
-    override fun close() {
+    override fun release() {
         coroutineScope.cancel()
         audioRecord.release()
     }
